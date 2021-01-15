@@ -44,53 +44,58 @@ def read_temp_dependent_files_then_merge(
         fmt='.bin',
         print_info_just_in_case=False
         ) :
-    
-     X, y = [], []
-     for T in T_arr: 
-         pattern = '{}(L={},T={:.4f})*{}'.format(base_name , L, T, fmt)
-         fpaths = glob.glob(os.path.join(idir, pattern))
+    X, y = [], [] 
+    i = 1
+        
+    for T in T_arr: 
+        pattern = '{}(L={},T={:.4f})*{}'.format(base_name , L, T, fmt)
+        fpaths = glob.glob(os.path.join(idir, pattern))
+       
+        XT = read_files_convert_to_raw_array(
+            fpaths, L**2, max_configs_per_temperature)
+        
+        if XT.size == 0:
+           continue
          
-         XT = read_files_convert_to_raw_array(
-             fpaths, L**2, max_configs_per_temperature)
-         if XT.size == 0:
-            continue
+        #label = 0 if T < Tc else 1 if T > Tc else 2
+        label = i if T != Tc else 0
+        
+        
+        
+        yT = np.full(XT.size // L**2, label)
          
-         label = 0 if T < Tc else 1 if T > Tc else 2
-         yT = np.full(XT.size // L**2, label)
+        X.append(XT)
+        y.append(yT)
          
-         X.append(XT)
-         y.append(yT)
-         
-         if print_info_just_in_case:
-             nT = XT.size // L**2
-             print('T={}, n_configs={}'.format(T,nT) )
-             print('files:', fpaths)
-             print ('XT: ')
-             for i in range(nT):
-                 print('label={}: '.format(yT[i]), (XT[i*L**2:(i+1)*L**2]+1)//2)
-             print('-'*10)
+        if print_info_just_in_case:
+            nT = XT.size // L**2
+            print('T={}, n_configs={}'.format(T,nT) )
+            print('files:', fpaths)
+            print ('XT: ')
+            for i in range(nT):
+                print('label={}: '.format(yT[i]), (XT[i*L**2:(i+1)*L**2]+1)//2)
+            print('-'*10)
+            
+        i += 1
         #
          
      # end for T
     
-     X = np.array(X).reshape(-1, L, L, 1)
-     y = np.array(y).reshape(-1, )
-     return X, y
+    X = np.array(X).reshape(-1, L, L, 1)
+    y = np.array(y).reshape(-1, )
+    return X, y
     
 
 
 ########################################################################
 
 if __name__ == '__main__':
-    idir = 'test-data/L=4'
-    T_arr = [3, 2.2692]
-    X, y = read_temp_dependent_files_then_merge(
-        idir, 4, T_arr, 2.2692, 
-        max_configs_per_temperature=-1
-        )
-   
-    print ('3d_like')
-    print(X.shape)
+    idir = r'/Users/matthieu.sarkis/ml/research/criticality_data/config-files/L=256'
+    T_arr = [2.25, 2.26, 2.2692, 2.28, 2.29]
+    X, y = read_temp_dependent_files_then_merge(idir, 256, T_arr, 2.2692, max_configs_per_temperature=1)
+    
+    print(y)
+    
     
     
     
