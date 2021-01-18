@@ -1,0 +1,16 @@
+import numpy as np
+
+def percolation_configuration(L, p):
+    spin = (np.random.random(size=(L,L)) < p).astype(np.int8)
+    return 2 * spin - 1
+
+def read_percolation_data(L, p_arr, max_configs_per_p=2000):
+    X = []
+    y = []
+    for p in p_arr:
+        for i in range(max_configs_per_p):
+            X.append(percolation_configuration(L, p))
+            y.append(p)
+    X = np.array(X).reshape(-1, L, L, 1)
+    y = np.array(y).reshape(-1, )
+    return X, y
