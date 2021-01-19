@@ -9,7 +9,8 @@ def read_percolation_data(L, p_arr, pc, max_configs_per_p=2000):
     y = []
     j = 1
     for p in p_arr:
-        label = j if p != pc else 0
+        #label = j if p != pc else 0
+        label = 1 if p == pc else 0
         for i in range(max_configs_per_p):
             X.append(percolation_configuration(L, p))
             y.append(label)
