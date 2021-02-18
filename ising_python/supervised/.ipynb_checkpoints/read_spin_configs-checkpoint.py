@@ -58,8 +58,8 @@ def read_temp_dependent_files_then_merge(
            continue
          
         #label = 0 if T < Tc else 1 if T > Tc else 2
-        #label = i if T != Tc else 0
-        label = 1 if T == Tc else 0
+        label = i if T != Tc else 0
+        #label = 1 if T == Tc else 0
         
         
         yT = np.full(XT.size // L**2, label)
