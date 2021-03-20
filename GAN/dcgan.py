@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 #
-# Written by Adel Sohbi, https://github.com/adelshb
-#
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
 # of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
@@ -14,6 +12,7 @@
 Example of Deep Convolutional Generative Adversarial Network (DCGAN) from https://www.tensorflow.org/tutorials/generative/dcgan
 """
 
+import tensorflow as tf
 from tensorflow.keras import layers
 
 def make_generator_model():
