@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Train GAN model."""
+"""Train the GAN model."""
 
 import dcgan
 
@@ -24,6 +24,7 @@ if __name__ == "__main__":
     parser = ArgumentParser()
 
     parser.add_argument("--batch_size", type=int, default=256)
+    parser.add_argument("--epochs", type=int, default=50)
 
     args = parser.parse_args()
     main(args)
