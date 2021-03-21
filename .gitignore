@@ -10,4 +10,8 @@ data/*
 =======
 env/
 .vscode/
+<<<<<<< HEAD
 >>>>>>> 2f39993 (data generation and gan training modification)
+=======
+data/
+>>>>>>> ae80882 (fix data_factory for generating configurations. Updating README for example and modify .gitignore for data folder)
