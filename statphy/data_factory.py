@@ -27,7 +27,7 @@ from models.slp import percolation_configuration
 #     --sample_per_configuration 100
 
 _available_models = [
-    "square lattice percolation",
+    "square_lattice_percolation",
     ]
 
 def main(args):
@@ -38,7 +38,7 @@ def main(args):
 
     # param_range = np.arrange(args.param_range_start, args.param_range_end, args.param_range_delta)
 
-    if args.model == "square lattice percolation":
+    if args.model == "square_lattice_percolation":
         # # Generate configurations within the selected range 
         # for p in param_range:
         #     if not os.path.exists(args.path + str(p)):
@@ -61,7 +61,7 @@ if __name__ == "__main__":
     parser = ArgumentParser()
 
     # Model
-    parser.add_argument("--model", type=str, default="square lattice percolation", choices=_available_models)
+    parser.add_argument("--model", type=str, default="square_lattice_percolation", choices=_available_models)
 
     # Model Parameters
     parser.add_argument("--L", type=int, default=128)
