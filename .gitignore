@@ -1,17 +1,6 @@
 __pycache__
 .DS_Store
 .ipynb_checkpoints
-<<<<<<< HEAD
-<<<<<<< HEAD
-.vscode
-=======
-data/*
->>>>>>> 5234060 (initial gan and statistical-models folder)
-=======
 env/
 .vscode/
-<<<<<<< HEAD
->>>>>>> 2f39993 (data generation and gan training modification)
-=======
 data/
->>>>>>> ae80882 (fix data_factory for generating configurations. Updating README for example and modify .gitignore for data folder)
