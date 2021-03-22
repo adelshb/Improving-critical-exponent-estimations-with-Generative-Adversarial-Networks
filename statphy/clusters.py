@@ -32,11 +32,11 @@ def cluster_number_density(imgs, show_progress=True):
         myrange = range(len(imgs))
     
     for i in myrange:
-        img = imgs[i]
+        site = imgs[i] > 0
 
         # Detecting clusters area
-        label = measurements.label(img>0)[0]
-        area = measurements.sum(img>0, label, index=np.arange(label.max() + 1))
+        label, _ = measurements.label(site)
+        area = measurements.sum(site, label, index=np.arange(label.max() + 1))
         area = area.astype(int)
 
         all_area = np.append(all_area, area)
@@ -63,11 +63,11 @@ def average_cluser_size(imgs, show_progress=True):
     
     S = 0
     for i in myrange:
-        img = imgs[i]
+        site = imgs[i] > 0
 
         # Detecting clusters area
-        label = measurements.label(img>0)[0]
-        area = measurements.sum(img>0, label, index=np.arange(label.max() + 1))
+        label, _ = measurements.label(site)
+        area = measurements.sum(site, label, index=np.arange(label.max() + 1))
         area = area.astype(int)
         
         # Remove spanning cluster by setting its area to zero
