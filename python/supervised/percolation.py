@@ -5,7 +5,7 @@ def percolation_configuration(L, p):
     spin = (np.random.random(size=(L,L)) < p).astype(np.int8)
     return 2 * spin - 1
 
-def read_percolation_data(L, p_arr, pc, max_configs_per_p=1000):
+def read_percolation_data(L, p_arr, max_configs_per_p=1000):
     X, y = [], []
     unique_labels = []
   
