@@ -12,6 +12,9 @@
 
 """Train the GAN model."""
 
+from argparse import ArgumentParser
+import os 
+
 import dcgan
 
 def main(args):
@@ -23,8 +26,15 @@ def main(args):
 if __name__ == "__main__":
     parser = ArgumentParser()
 
+    # Data
+    parser.add_argument("--data_dir", nargs=1, default=os.getcwd()+"/data/")
+
+    # Training parameters
     parser.add_argument("--batch_size", type=int, default=256)
     parser.add_argument("--epochs", type=int, default=50)
+
+    # Save model
+    parser.add_argument("--save_dir", nargs=1, default=os.getcwd())
 
     args = parser.parse_args()
     main(args)

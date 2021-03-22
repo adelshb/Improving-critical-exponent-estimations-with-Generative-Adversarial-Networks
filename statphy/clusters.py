@@ -12,6 +12,7 @@ Function to compute the cluster number density and the average cluster size
 """
 
 import numpy as np
+from scipy.ndimage import measurements
 from tqdm import trange
 
 def cluster_number_density(imgs, show_progress=True): 
