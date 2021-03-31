@@ -18,9 +18,9 @@ def prepare_data(**kwargs):
     
     return X, y, unique_labels
 #====================================================================
-def prepare_dirs(odir=None, folder_name=''):
-    if odir is None: 
-        odir= os.path.join(os.path.expanduser("~"), 'models')
+def prepare_dirs(odir='', folder_name=''):
+    if odir == '': 
+        odir = 'saved-files' #os.path.join(os.path.expanduser("~"), 'models')
    
     stage_train_dir = os.path.join(odir, folder_name) 
     os.makedirs(stage_train_dir, exist_ok=True) 
@@ -43,7 +43,8 @@ def main(args):
                                        n_configs_per_p=args.n_configs_per_p,
                                       )    
 
-    stage_train_dir = prepare_dirs(folder_name='perc--' + utils.time_to_string(start_time))
+    stage_train_dir = prepare_dirs(odir=args.odir, 
+                                  folder_name='perc--' + utils.time_to_string(start_time))
 
 
     if True:
@@ -53,6 +54,7 @@ def main(args):
         print('# X.shape={} y.shape={}'.format(X.shape, y.shape))
         print('# labels.size={}'.format(len(unique_labels)))
         print('# stage_train_dir:', stage_train_dir)
+        print(65*'=')
 
     
 
@@ -66,11 +68,9 @@ def main(args):
                                  epochs=args.epochs,
                                 )
 
-
-
     # we have reached to the end!
     end_time = datetime.now()
-
+    print(65*'=')
     print ('# start_time={} end_time={} elpased_time={}'.\
     format(utils.time_to_string(start_time), 
            utils.time_to_string(end_time), 
@@ -82,9 +82,7 @@ def main(args):
 
 if __name__ == '__main__':
     
-
     parser = ArgumentParser()
-
     
     # Model Parameters
     parser.add_argument("--L", type=int, default=128)
@@ -96,6 +94,7 @@ if __name__ == '__main__':
     parser.add_argument("--p_increment", type=float, default=0.01)
 
     parser.add_argument("--random_state", type=int, default=42)
+    parser.add_argument("--odir", type=str, default='saved-files')
     
     
     parser.add_argument("--test_size", type=float, default=0.20)
