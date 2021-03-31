@@ -11,16 +11,18 @@ from sklearn.model_selection import train_test_split
 import design
 import utils
 #====================================================================
-
+#====================================================================
 
 def train(X, y,
           random_state=42,
           test_size=0.20,
           stage_train_dir='.',
-          chekpoint_name='checkpoint.h5',
+          n_gpus=1,
           patience=10,
           epochs=10,
-          print_tensorboard=False,
+          check_checkpoint=True,
+          check_earlystopping=True,
+          check_tensorboard=False,
           **kwargs
          ):
 
@@ -32,12 +34,16 @@ def train(X, y,
                                                         ) #stratify=y
     K = len(np.unique(y_train))  
 
-    strategy = tf.distribute.MirroredStrategy()
+    
+    # GPU distribution
+    device_type = 'GPU'
+    devices = tf.config.experimental.list_physical_devices(device_type)
+    devices_names = [d.name.split('e:')[1] for d in devices]
+    strategy = tf.distribute.MirroredStrategy(devices=devices_names[:n_gpus])
 
     with strategy.scope():
         # %%
         model = design.create_model(L, K)
-
 
 
         # %%
@@ -53,13 +59,18 @@ def train(X, y,
 
     # %%
     # Callbacks
-    checkpoint_cb = ModelCheckpoint(utils.make_path(stage_train_dir, chekpoint_name), 
-                                    save_best_only=True)
-    early_stopping_cb = EarlyStopping(patience=patience, restore_best_weights=True)
+    callbacks = []
 
-    callbacks = [checkpoint_cb, early_stopping_cb]
+    if check_checkpoint:
+        checkpoint_file = os.path.join(stage_train_dir, "ckpt-best.h5")
+        checkpoint_cb = ModelCheckpoint(checkpoint_file, save_best_only=True) #
+        callbacks += [checkpoint_cb]
+    
+    if check_earlystopping:
+        early_stopping_cb = EarlyStopping(patience=patience, restore_best_weights=True)
+        callbacks += [early_stopping_cb]
 
-    if print_tensorboard:
+    if check_tensorboard:
         tensor_board = TensorBoard(log_dir=stage_train_dir)
         callbacks += [tensor_board]
 
@@ -71,6 +82,9 @@ def train(X, y,
                         callbacks=callbacks,
                         epochs=epochs)
 
+    if not check_checkpoint:
+        model_path = os.path.join(stage_train_dir, 'saved-model.h5')
+        model.save(model_path)
 
     return model, history
    

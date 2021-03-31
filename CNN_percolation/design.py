@@ -26,11 +26,11 @@ def create_model(L, K):
 
     # Classification block
     x = keras.layers.Flatten()(x)
-    x = keras.layers.Dropout(0.2)(x)
+    #x = keras.layers.Dropout(0.2)(x)
     x = keras.layers.Dense(512, activation='relu')(x)
-    x = keras.layers.Dropout(0.2)(x)
+    #x = keras.layers.Dropout(0.2)(x)
     x = keras.layers.Dense(1024, activation='relu')(x)
-    x = keras.layers.Dropout(0.2)(x)
+    #x = keras.layers.Dropout(0.2)(x)
     x = keras.layers.Dense(K, activation='softmax')(x)
 
     model = keras.models.Model(i, x)
