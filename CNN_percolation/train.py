@@ -32,23 +32,24 @@ def train(X, y,
                                                         ) #stratify=y
     K = len(np.unique(y_train))  
 
+    strategy = tf.distribute.MirroredStrategy()
 
-    # %%
-    model = design.create_model(L, K)
+    with strategy.scope():
+        # %%
+        model = design.create_model(L, K)
 
 
 
-    # %%
-    # Compiling the model
-    initial_learning_rate = 0.01
-    decay_steps = 1.0
-    decay_rate = 0.5
-    learning_rate_fn = tf.keras.optimizers.schedules.InverseTimeDecay(
-        initial_learning_rate, decay_steps, decay_rate)
+        # %%
+        # Compiling the model
+        initial_learning_rate = 0.01
+        decay_steps = 1.0
+        decay_rate = 0.5
+        learning_rate_fn = tf.keras.optimizers.schedules.InverseTimeDecay(
+            initial_learning_rate, decay_steps, decay_rate)
 
-    opt = tf.keras.optimizers.Adam(learning_rate=learning_rate_fn)
-    model.compile(optimizer=opt, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-
+        opt = tf.keras.optimizers.Adam(learning_rate=learning_rate_fn)
+        model.compile(optimizer=opt, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
     # %%
     # Callbacks
