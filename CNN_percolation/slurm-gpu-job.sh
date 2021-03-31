@@ -20,4 +20,4 @@ export HDF5_USE_FILE_LOCKING='FALSE'  # for exporting hd5 file in tf
 
 conda activate tf-gpu # activate your environment
 
-python3 main.py
+python3 main.py --epochs 1000 --n_configs_per_p 2000 --n_gpus 4
