@@ -15,13 +15,29 @@
 from argparse import ArgumentParser
 import os 
 
-import dcgan
+from dcgan import make_generator_model, make_discriminator_model
+from utils import *
 
 def main(args):
 
-    ### TRAINING HERE ###
+    
 
-    return None
+    generator = make_generator_model()
+    discriminator = make_discriminator_model()
+
+    cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+
+    generator_optimizer = tf.keras.optimizers.Adam(1e-4)
+    discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
+
+    checkpoint_dir = './training_checkpoints'
+    checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
+    checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
+                                    discriminator_optimizer=discriminator_optimizer,
+                                    generator=generator,
+                                    discriminator=discriminator)
+
+    train(train_dataset, EPOCHS)
 
 if __name__ == "__main__":
     parser = ArgumentParser()

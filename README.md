@@ -10,11 +10,11 @@ The neural network is written in python using tensorflow.
 ```shell
 pip install -r requirements.txt
 ```
- ### Example: Generate and save .
+ ### Example: Generate and save a dataset.
 
  ```shell
     python statphy/data_factory.py \
-        --model square lattice percolation \
+        --model square_lattice_percolation \
         --L 128 \
         --crit_parameter 0.5927 \
         --sample_per_configuration 100
