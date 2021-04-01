@@ -21,7 +21,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/extras/CUPTI/lib64
 conda activate tf-gpu # activate your environment
 
 python3 main.py             \
- --odir "saved-files2"      \
+ --odir "saved-files"      \
  --L 128                    \
  --p_down 0.5               \
  --p_up 0.7                 \
