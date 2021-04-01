@@ -20,6 +20,7 @@ def train(X, y,
           n_gpus=1,
           patience=10,
           epochs=10,
+          print_model_summary=True,
           check_checkpoint=True,
           check_earlystopping=True,
           check_tensorboard=False,
@@ -43,23 +44,21 @@ def train(X, y,
 
     with strategy.scope():
         # %%
-        model = design.create_model(L, K)
+        model = design.create_model((L,L,1), K)
 
 
         # %%
-        # Compiling the model
-        initial_learning_rate = 0.01
-        decay_steps = 1.0
-        decay_rate = 0.5
-        learning_rate_fn = tf.keras.optimizers.schedules.InverseTimeDecay(
-            initial_learning_rate, decay_steps, decay_rate)
-
-        opt = tf.keras.optimizers.Adam(learning_rate=learning_rate_fn)
+        # Compiling the model            
+        opt = tf.keras.optimizers.Adam()
         model.compile(optimizer=opt, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
     # %%
     # Callbacks
+    
     callbacks = []
+    
+    lr_scheduler = tf.keras.callbacks.ReduceLROnPlateau(factor=0.5, patience=5)
+    callbacks += [lr_scheduler]
 
     if check_checkpoint:
         checkpoint_file = os.path.join(stage_train_dir, "ckpt-best.h5")
@@ -73,6 +72,16 @@ def train(X, y,
     if check_tensorboard:
         tensor_board = TensorBoard(log_dir=stage_train_dir)
         callbacks += [tensor_board]
+
+
+    # %%
+    # print model info
+    if print_model_summary:
+        utils.get_model_summary(model, print_fn=print)
+        # print in a log file
+        with open(os.path.join(stage_train_dir, 'model_summary.log'), 'w') as f:
+            utils.get_model_summary(model, print_fn=lambda x: f.write(x + '\n'))
+
 
 
     # %%
