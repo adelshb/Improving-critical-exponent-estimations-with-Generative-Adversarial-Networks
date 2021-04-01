@@ -44,7 +44,7 @@ def main(args, print_args=True):
                                       )    
 
     stage_train_dir = get_dirs(odir=args.odir, 
-                               folder_name='perc--' + utils.time_to_string(start_time))
+                               folder_name=utils.time_to_string(start_time))
 
 
     
@@ -92,17 +92,16 @@ if __name__ == '__main__':
 
     
     # Model Parameters
+    parser.add_argument("--odir", type=str, default='saved-files')
     parser.add_argument("--L", type=int, default=128)
-    parser.add_argument("--round_digit", type=int, default=2)
     parser.add_argument("--n_configs_per_p", type=int, default=100)
 
     parser.add_argument("--p_down", type=float, default=0.50)
     parser.add_argument("--p_up", type=float, default=0.70)
     parser.add_argument("--p_increment", type=float, default=0.01)
+    parser.add_argument("--round_digit", type=int, default=2)
 
     parser.add_argument("--random_state", type=int, default=42)
-    parser.add_argument("--odir", type=str, default='saved-files')
-    
     
     parser.add_argument("--test_size", type=float, default=0.20)
     parser.add_argument("--epochs", type=int, default=2)
