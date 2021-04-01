@@ -16,8 +16,20 @@
 # LOAD MODULES, INSERT CODE, AND RUN YOUR PROGRAMS HERE
 
 export HDF5_USE_FILE_LOCKING='FALSE'  # for exporting hd5 file in tf
-#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/extras/CUPTI/lib64
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/extras/CUPTI/lib64
 
 conda activate tf-gpu # activate your environment
 
-python3 main.py --epochs 1000 --n_configs_per_p 2000 --n_gpus 4
+python3 main.py             \
+ --odir "saved-files2"      \
+ --L 128                    \
+ --p_down 0.5               \
+ --p_up 0.7                 \
+ --p_increment 0.01         \
+ --round_digit 2            \
+ --epochs 1000              \
+ --n_configs_per_p 2000     \
+ --n_gpus 1                 \
+ --patience 10              \
+ --test_size 0.2            \
+ --random_state 42
