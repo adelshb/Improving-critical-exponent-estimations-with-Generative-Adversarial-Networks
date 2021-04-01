@@ -18,10 +18,7 @@ def get_data_set(**kwargs):
     
     return X, y, unique_labels
 #====================================================================
-def get_dirs(odir='', folder_name=''):
-    if odir == '': 
-        odir = 'saved-files' #os.path.join(os.path.expanduser("~"), 'models')
-    
+def get_dirs(odir='saved-files', folder_name=''): 
     stage_train_dir = os.path.join(odir, folder_name) 
     os.makedirs(stage_train_dir, exist_ok=True) 
     return stage_train_dir
