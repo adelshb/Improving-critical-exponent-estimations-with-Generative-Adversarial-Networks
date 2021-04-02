@@ -46,7 +46,7 @@ def train(X, y,
           n_gpus=1,
           patience=10,
           epochs=10,
-          batch_size=32,
+          batch_size=None,
 
           dump_model_summary=True,
           set_lr_scheduler=True,
