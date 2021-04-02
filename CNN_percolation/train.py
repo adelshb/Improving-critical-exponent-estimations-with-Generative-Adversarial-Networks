@@ -101,11 +101,16 @@ def train(X, y,
     # print model info
     if dump_model_summary:
         print(model.summary())
-        ## plot summary in a log file
-        tf.keras.utils.plot_model(model,
-                                  to_file=os.path.join(stage_train_dir, 'model_summary.pdf'), 
-                                  show_shapes=True,
-                                 )
+        
+        try:
+            tf.keras.utils.plot_model(model,
+                                      to_file=os.path.join(stage_train_dir, 'model_summary.pdf'), 
+                                      show_shapes=True,
+                                      )
+        except:
+            with open(os.path.join(stage_train_dir, 'model_summary.log'), 'w') as f:
+                utils.get_model_summary(model, print_fn=lambda x: f.write(x + '\n'))
+       
 
 
 
@@ -117,6 +122,7 @@ def train(X, y,
                         epochs=epochs,
                         batch_size=batch_size)
 
+   
     if save_model:
         model_path = os.path.join(stage_train_dir, 'saved-model.h5')
         model.save(model_path)
