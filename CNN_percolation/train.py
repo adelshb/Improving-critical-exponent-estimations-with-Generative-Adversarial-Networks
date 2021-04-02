@@ -103,7 +103,7 @@ def train(X, y,
         print(model.summary())
         ## plot summary in a log file
         tf.keras.utils.plot_model(model,
-                                  to_file=os.path.join(stage_train_dir, 'model_summary.png'), 
+                                  to_file=os.path.join(stage_train_dir, 'model_summary.pdf'), 
                                   show_shapes=True,
                                  )
 
