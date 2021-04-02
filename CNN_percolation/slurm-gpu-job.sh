@@ -32,5 +32,5 @@ python3 main.py             \
  --n_gpus 1                 \
  --patience 10              \
  --test_size 0.2            \
- --batch_size None          \
+ --batch_size 32          \
  --random_state 42
