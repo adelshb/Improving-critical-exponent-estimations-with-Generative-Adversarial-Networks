@@ -25,7 +25,7 @@ python3 main.py             \
  --L 128                    \
  --p_down 0.5               \
  --p_up 0.7                 \
- --p_increment 0.01         \
+ --p_increment 0.02         \
  --round_digit 2            \
  --epochs 100              \
  --n_configs_per_p 1000     \
@@ -33,4 +33,6 @@ python3 main.py             \
  --patience 10              \
  --test_size 0.2            \
  --batch_size 32          \
- --random_state 42
+ --random_state 42          \
+ --dropout_rate 0.2          
+ 

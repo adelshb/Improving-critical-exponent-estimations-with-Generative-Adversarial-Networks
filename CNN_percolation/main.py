@@ -70,7 +70,8 @@ def main(args, print_args=True):
                                  test_size=args.test_size,
                                  epochs=args.epochs,
                                  n_gpus=args.n_gpus,
-                                 batch_size=args.batch_size,                                 
+                                 batch_size=args.batch_size,    
+                                 dropout_rate=args.dropout_rate,
                                 )
 
 
@@ -108,6 +109,9 @@ if __name__ == '__main__':
     parser.add_argument("--patience", type=int, default=20)
     parser.add_argument("--epochs", type=int, default=2)
     parser.add_argument("--batch_size", action='store', type=int, default=None)
+    
+    parser.add_argument("--dropout_rate", type=float, default=0.2)
+    
     
 
     parser.add_argument('--n_gpus', type=int, default=1)
