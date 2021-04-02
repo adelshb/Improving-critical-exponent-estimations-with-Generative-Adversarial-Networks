@@ -45,5 +45,5 @@ def evaluate(model_path, history_path=''):
 
 if __name__ == '__main__':
     
-    evaluate(r'saved-files\2021.04.02.12.56.54\saved-model.h5')
+    evaluate(r'C:\Users\Ebi\Dropbox\Adel-Ebi-Matthieu\my-test\7\saved-files\2021.04.02.12.56.54\saved-model.h5')
     

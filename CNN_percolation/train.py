@@ -26,9 +26,10 @@ def __print_model_summary(model, stage_train_dir):
             utils.get_model_summary(model, print_fn=lambda x: f.write(x + '\n'))
 #====================================================================
 
-def __create_and_compile_model(input_shape, K):
 
-    model = design.create_model(input_shape, K)
+def __create_and_compile_model(input_shape, K, dropout_rate):
+
+    model = design.create_model(input_shape, K, dropout_rate=dropout_rate)
 
     # Compiling the model            
     opt = tf.keras.optimizers.Adam()
@@ -47,6 +48,7 @@ def train(X, y,
           patience=10,
           epochs=10,
           batch_size=None,
+          dropout_rate=0.2,
 
           dump_model_summary=True,
           set_lr_scheduler=True,
@@ -78,9 +80,9 @@ def train(X, y,
         #strategy = tf.distribute.MirroredStrategy(devices=devices_names[:n_gpus])
         strategy = tf.distribute.MirroredStrategy()
         with strategy.scope():
-            model = __create_and_compile_model((L,L,1), K)
+            model = __create_and_compile_model((L,L,1), K, dropout_rate)
     else:
-        model = __create_and_compile_model((L,L,1), K)
+        model = __create_and_compile_model((L,L,1), K, dropout_rate)
 
   
 
@@ -117,6 +119,7 @@ def train(X, y,
         
 
 
+
     # %%
     # training the model
     history = model.fit(X_train, y_train,  
@@ -138,4 +141,5 @@ def train(X, y,
 
     return model, history
    
+
 #====================================================================

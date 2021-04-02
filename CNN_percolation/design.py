@@ -24,7 +24,7 @@ def create_model(input_shape, K,
 
     if dropout_rate > 0:
         x = keras.layers.Dropout(dropout_rate)(x)
-  
+
     # Classification block
     for l in range(n_dense_layers):
         x = keras.layers.Dense(n_neurons, activation='relu')(x)
@@ -34,7 +34,7 @@ def create_model(input_shape, K,
     x = keras.layers.Dense(K, activation='softmax')(x)
     model = keras.models.Model(i, x)
     return model
-
+###########
 
     
- 
+    
