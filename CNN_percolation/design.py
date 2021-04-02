@@ -19,9 +19,8 @@ def create_model(input_shape, K,
         x = keras.layers.BatchNormalization()(x)
         x = keras.layers.MaxPooling2D((2,2))(x)
 
-        if l == n_conv_layers -1:
-            x = keras.layers.Flatten()(x)
 
+    x = keras.layers.Flatten()(x)
 
 
     # Classification block
@@ -36,7 +35,7 @@ def create_model(input_shape, K,
     x = keras.layers.Dense(K, activation='softmax')(x)
     model = keras.models.Model(i, x)
     return model
-###########
+
 
     
-    
+ 
