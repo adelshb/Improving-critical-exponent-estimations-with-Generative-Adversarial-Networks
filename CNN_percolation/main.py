@@ -6,6 +6,7 @@ import utils
 from datetime import datetime
 import percolation
 import tensorflow as tf
+import pickle
 #====================================================================
 def get_data_set(**kwargs):
 
@@ -26,6 +27,8 @@ def get_dirs(odir='saved-files', folder_name=''):
 
 def main(args, print_args=True):
     start_time = datetime.now()
+
+   
 
     # init seed
     np.random.seed(args.random_state)
@@ -67,6 +70,7 @@ def main(args, print_args=True):
                                  test_size=args.test_size,
                                  epochs=args.epochs,
                                  n_gpus=args.n_gpus,
+                                 batch_size=args.batch_size,                                 
                                 )
 
 
@@ -90,19 +94,21 @@ if __name__ == '__main__':
     
     # Model Parameters
     parser.add_argument("--odir", type=str, default='saved-files')
-    parser.add_argument("--L", type=int, default=128)
+    parser.add_argument("--L", type=int, default=32)
     parser.add_argument("--n_configs_per_p", type=int, default=100)
 
-    parser.add_argument("--p_down", type=float, default=0.50)
-    parser.add_argument("--p_up", type=float, default=0.70)
+    parser.add_argument("--p_down", type=float, default=0.59)
+    parser.add_argument("--p_up", type=float, default=0.60)
     parser.add_argument("--p_increment", type=float, default=0.01)
     parser.add_argument("--round_digit", type=int, default=2)
 
     parser.add_argument("--random_state", type=int, default=42)
     
     parser.add_argument("--test_size", type=float, default=0.20)
-    parser.add_argument("--epochs", type=int, default=2)
     parser.add_argument("--patience", type=int, default=20)
+    parser.add_argument("--epochs", type=int, default=2)
+    parser.add_argument("--batch_size", type=int, default=32)
+    
 
     parser.add_argument('--n_gpus', type=int, default=1)
     

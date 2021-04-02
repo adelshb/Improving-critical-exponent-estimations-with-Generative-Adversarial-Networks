@@ -11,7 +11,7 @@ def generate_data(L, p_arr, max_configs_per_p=1000):
   
     j = 0
     for p in p_arr:
-        unique_labels.append(j)
+        unique_labels.append(str(p))
         for i in range(max_configs_per_p):
             X.append(percolation_configuration(L, p))
             y.append(j)
