@@ -28,8 +28,6 @@ def get_dirs(odir='saved-files', folder_name=''):
 def main(args, print_args=True):
     start_time = datetime.now()
 
-   
-
     # init seed
     np.random.seed(args.random_state)
     tf.random.set_seed(args.random_state)
@@ -47,7 +45,13 @@ def main(args, print_args=True):
                                folder_name=utils.time_to_string(start_time))
 
 
+    # print unique lables in stage_train_dir
+    with open(os.path.join(stage_train_dir, 'labels.dat'), 'w') as f:
+        for i in range(len(unique_labels)):
+            f.write('{}\t{}\n'.format(i, unique_labels[i]))
     
+    
+    # print args
     if print_args:
         print(72*'=')
         vargs = vars(args)
