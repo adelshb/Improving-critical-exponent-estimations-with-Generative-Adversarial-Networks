@@ -14,7 +14,7 @@ import pickle
 #====================================================================
 def __print_model_summary(model, stage_train_dir):
 
-    print(model.summary())
+    utils.get_model_summary(model, print_fn=print)
     
     try:
         tf.keras.utils.plot_model(model,
