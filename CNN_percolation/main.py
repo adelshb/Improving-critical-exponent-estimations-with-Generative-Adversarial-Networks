@@ -102,12 +102,12 @@ if __name__ == '__main__':
     parser.add_argument("--p_increment", type=float, default=0.01)
     parser.add_argument("--round_digit", type=int, default=2)
 
-    parser.add_argument("--random_state", type=int, default=42)
+    parser.add_argument("--random_state", action='store', default=42)
     
     parser.add_argument("--test_size", type=float, default=0.20)
     parser.add_argument("--patience", type=int, default=20)
     parser.add_argument("--epochs", type=int, default=2)
-    parser.add_argument("--batch_size", type=int, default=32)
+    parser.add_argument("--batch_size", action='store', default=None)
     
 
     parser.add_argument('--n_gpus', type=int, default=1)
