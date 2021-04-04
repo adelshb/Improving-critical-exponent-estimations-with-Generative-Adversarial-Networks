@@ -10,19 +10,20 @@ from sklearn.model_selection import train_test_split
 
 import design
 import utils
+from utils import make_path
 import json
 #====================================================================
 def print_model_summary(model, stage_train_dir):
 
     model.summary(print_fn=print)
 
-    with open(os.path.join(stage_train_dir, 'model_summary.log'), 'w') as f:
+    with open(make_path(stage_train_dir, 'model_summary.log'), 'w') as f:
             model.summary(print_fn=lambda x: f.write(x + '\n'))
         
 
 
     # print optimizations
-    with open(os.path.join(stage_train_dir, 'optimizer.json'), 'w') as f:
+    with open(make_path(stage_train_dir, 'optimizer.json'), 'w') as f:
         json.dump(model.optimizer.get_config(), f, indent=4, sort_keys=True)
 #====================================================================
 
@@ -96,7 +97,7 @@ def train(X, y,
         callbacks += [lr_scheduler]
 
     if set_checkpoint:
-        checkpoint_file = os.path.join(stage_train_dir, "ckpt-best.h5")
+        checkpoint_file = make_path(stage_train_dir, "ckpt-best.h5")
         checkpoint_cb = ModelCheckpoint(checkpoint_file, 
                                         save_best_only=True, 
                                         monitor='val_accuracy',
@@ -128,16 +129,14 @@ def train(X, y,
                         batch_size=batch_size)
 
     if save_model:
-        model.save(os.path.join(stage_train_dir, 'saved-model.h5'))
+        model.save(make_path(stage_train_dir, 'saved-model.h5'))
 
 
     if dump_history:
         utils.write_numpy_dic_to_json(history.history, 
-                                    os.path.join(stage_train_dir, 'history.json')
+                                    make_path(stage_train_dir, 'history.json')
                                     )
        
-
-
 
     return model, history
    
