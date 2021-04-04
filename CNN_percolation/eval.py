@@ -106,7 +106,7 @@ def evaluate_model(model_path, labels_path, args_path):
 
 
     # evaluate test set
-    loss_test, accuracy_test = model.evaluate(X_test, y_test, verbose=0)
+    loss_test, accuracy_test = model.evaluate(X_test, y_test, verbose=1)
     print('loss_test={:.3f}, accuracy_test={:.3f}'.format(loss_test, accuracy_test))
 
 
