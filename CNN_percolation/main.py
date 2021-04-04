@@ -2,8 +2,7 @@ from argparse import ArgumentParser
 import os, sys
 import numpy as np
 import train
-import utils
-from utils import make_path
+from utils import make_path, time_to_string
 from datetime import datetime
 import percolation
 import tensorflow as tf
@@ -45,7 +44,7 @@ def main(args, print_args=True):
     #X = X.astype(np.float32)
 
     stage_train_dir = get_dirs(odir=args.odir, 
-                               folder_name=utils.time_to_string(start_time))
+                               folder_name=time_to_string(start_time))
 
 
     # save unique_lables in stage_train_dir
@@ -94,8 +93,8 @@ def main(args, print_args=True):
     end_time = datetime.now()
     print(65*'=')
     print ('# start_time={} end_time={} elpased_time={}'.\
-    format(utils.time_to_string(start_time), 
-           utils.time_to_string(end_time), 
+    format(time_to_string(start_time), 
+           time_to_string(end_time), 
            end_time - start_time) )
 
 
