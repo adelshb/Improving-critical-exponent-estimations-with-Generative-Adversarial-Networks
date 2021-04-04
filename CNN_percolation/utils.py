@@ -12,8 +12,6 @@ def make_path(*paths):
     path = os.path.realpath(path)
     return path
 
-def print_model_summary(model, print_fn=None):
-    model.summary(print_fn=print_fn)
 
 
 def write_numpy_dic_to_json(dic, path): 
