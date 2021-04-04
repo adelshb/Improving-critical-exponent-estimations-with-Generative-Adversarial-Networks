@@ -9,6 +9,7 @@ import json
 from main import get_data_set
 import pandas as pd
 import math
+from argparse import ArgumentParser
 #====================================================================
 def get_proper_lables_and_y(path_labels_train, labels_test, y_test):
     """
@@ -77,6 +78,7 @@ def evaluate_model(model_path, labels_path, args_path):
         return
 
 
+    print(' --> args_of_trained_model:', args)
 
     #model_input_shape = model.layers[0].output_shape[0] #(None,L,L,1)
     #L = model_input_shape[1]
@@ -122,35 +124,51 @@ def evaluate_model(model_path, labels_path, args_path):
     #plt.show()
     
 #====================================================================
-def main(stage_train_dir):
-    
-    fname_model = 'saved-model.h5' #
-    fname_label = 'labels.json'
-    fname_args = 'args.json'
-    fname_history = 'history.json'
-    
-    fpath_model = os.path.join(stage_train_dir, fname_model)
-    fpath_label = os.path.join(stage_train_dir, fname_label)
-    fpath_args = os.path.join(stage_train_dir, fname_args)
-    fpath_history = os.path.join(stage_train_dir, fname_history)
-   
+def main(args, 
+         fname_model = 'saved-model.h5',
+         fname_label = 'labels.json',
+         fname_args = 'args.json',
+         fname_history = 'history.json',
+        ):
 
-    # part plot histoy
-    print('# Plot history of loss ...')
-    plot_history(fpath_history)
-    
-    # part predict and evaluate
-    print('# Evaluate and plot confusion_matrix ...')
-    evaluate_model(fpath_model, fpath_label, fpath_args)
+
+    if os.path.exists(args.trained_dir):
+        print('# trained_dir:', args.trained_dir)
+
+
+
+        fpath_model = os.path.join(args.trained_dir, fname_model)
+        fpath_label = os.path.join(args.trained_dir, fname_label)
+        fpath_args = os.path.join(args.trained_dir, fname_args)
+        fpath_history = os.path.join(args.trained_dir, fname_history)
+
+
+        # part plot histoy
+        print('# Plotting history of loss ...')
+        plot_history(fpath_history)
+
+        # part predict and evaluate
+        print('# Evaluating and plotting confusion_matrix ...')
+        evaluate_model(fpath_model, fpath_label, fpath_args)
+
+    else:
+        print('# Error: there is no trained_dir:', args.trained_dir)
 
 
 #====================================================================
 
 if __name__ == '__main__':
 
-    stage_train_dir = 'saved-files/2021.04.04.10.33.49'
+    parser = ArgumentParser()
 
-    main(stage_train_dir)
+    
+    # Model Parameters
+    parser.add_argument("--trained_dir", type=str, 
+                        default="saved-files/2021.04.04.18.17.23")
+
+
+    args = parser.parse_args()
+    main(args)
 
     
     
