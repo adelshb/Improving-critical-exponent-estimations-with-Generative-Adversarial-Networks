@@ -3,6 +3,7 @@ import os, sys
 import numpy as np
 import train
 import utils
+from utils import make_path
 from datetime import datetime
 import percolation
 import tensorflow as tf
@@ -20,7 +21,7 @@ def get_data_set(**kwargs):
     return X, y, unique_labels
 #====================================================================
 def get_dirs(odir='saved-files', folder_name=''): 
-    stage_train_dir = os.path.join(odir, folder_name) 
+    stage_train_dir = make_path(odir, folder_name) 
     os.makedirs(stage_train_dir, exist_ok=True) 
     return stage_train_dir
 #====================================================================
@@ -48,7 +49,7 @@ def main(args, print_args=True):
 
 
     # save unique_lables in stage_train_dir
-    with open(os.path.join(stage_train_dir, 'labels.json'), 'w') as f:
+    with open(make_path(stage_train_dir, 'labels.json'), 'w') as f:
         json.dump(labels, f, indent=4,)
 
     
@@ -56,7 +57,7 @@ def main(args, print_args=True):
     
 
     # save vars in stage_train_dir
-    with open(os.path.join(stage_train_dir, 'args.json'), 'w') as f:
+    with open(make_path(stage_train_dir, 'args.json'), 'w') as f:
         json.dump(vargs, f, indent=4,)
 
 
