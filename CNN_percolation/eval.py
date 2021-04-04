@@ -111,8 +111,8 @@ def evaluate_model(model_path, labels_path, args_path):
 
 
     # predict test set
-    p_test = model.predict(X_test).argmax(axis=1)
-    conf_matrix = confusion_matrix(y_test, p_test, 
+    y_pred = model.predict(X_test).argmax(axis=1)
+    conf_matrix = confusion_matrix(y_test, y_pred, 
                                    labels=np.arange(len(labels_train)))
     
     plt.figure(figsize=(7,7))
