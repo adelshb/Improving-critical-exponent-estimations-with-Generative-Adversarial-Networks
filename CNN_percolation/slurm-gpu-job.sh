@@ -34,5 +34,5 @@ python3 main.py             \
  --test_size 0.2            \
  --batch_size 32          \
  --random_state 42          \
- --dropout_rate 0.2          
+ --dropout_rate 0          
  
