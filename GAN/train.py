@@ -16,16 +16,19 @@ from argparse import ArgumentParser
 import os 
 import glob
 
+import numpy as np
+
 from dcgan import make_generator_model, make_discriminator_model
 from utils import *
 
 def main(args):
 
     train_images = []
-    for filename in glob.glob(os.path.join(args.data_dir, '*.npy')):
-        with open(os.path.join(os.getcwd(), filename), 'r') as f: 
+    for filename in glob.glob(os.path.join(args.data_dir[0], '*.npy')):
+        with open(os.path.join(os.getcwd(), filename), 'rb') as f: 
             train_images.append(np.load(f))
     train_labels = [0]*len(train_images)
+    train_dataset = tf.data.Dataset.from_tensor_slices(train_images).batch(args.batch_size)
 
     generator = make_generator_model()
     discriminator = make_discriminator_model()
@@ -42,7 +45,7 @@ def main(args):
                                     generator=generator,
                                     discriminator=discriminator)
 
-    train(train_dataset, EPOCHS)
+    train(train_dataset, generator, discriminator, args.epochs, args.batch_size, args.noise_dim)
 
 if __name__ == "__main__":
     parser = ArgumentParser()
@@ -53,7 +56,7 @@ if __name__ == "__main__":
     # Training parameters
     parser.add_argument("--batch_size", type=int, default=256)
     parser.add_argument("--epochs", type=int, default=50)
-
+    parser.add_argument("--noise_dim", type=int, default=100)
     # Save model
     parser.add_argument("--save_dir", nargs=1, default=os.getcwd())
 

@@ -9,7 +9,9 @@
 # that they have been altered from the originals.
 
 import tensorflow as tf
-    
+import time
+import matplotlib as plt
+
 def generator_loss(fake_output):
     return cross_entropy(tf.ones_like(fake_output), fake_output)
 
@@ -19,8 +21,8 @@ def discriminator_loss(real_output, fake_output):
     total_loss = real_loss + fake_loss
     return total_loss
 
-def train_step(images):
-    noise = tf.random.normal([BATCH_SIZE, noise_dim])
+def train_step(images, generator, discriminator, batch_size, noise_dim):
+    noise = tf.random.normal([batch_size, noise_dim])
 
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
       generated_images = generator(noise, training=True)
@@ -37,12 +39,12 @@ def train_step(images):
     generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
     discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
 
-def train(dataset, epochs):
+def train(dataset, generator, discriminator, epochs, batch_size, noise_dim):
   for epoch in range(epochs):
     start = time.time()
 
     for image_batch in dataset:
-      train_step(image_batch)
+      train_step(image_batch, generator, discriminator, batch_size, noise_dim)
 
     # Produce images for the GIF as you go
     display.clear_output(wait=True)
