@@ -10,24 +10,24 @@ from sklearn.model_selection import train_test_split
 
 import design
 import utils
-import pickle
+import json
 #====================================================================
-def __print_model_summary(model, stage_train_dir):
+def print_model_summary(model, stage_train_dir):
 
-    utils.get_model_summary(model, print_fn=print)
+    utils.print_model_summary(model, print_fn=print)
     
-    try:
-        tf.keras.utils.plot_model(model,
-                                  to_file=os.path.join(stage_train_dir, 'model_summary.pdf'), 
-                                  show_shapes=True,
-                                  )
-    except:
-        with open(os.path.join(stage_train_dir, 'model_summary.log'), 'w') as f:
-            utils.get_model_summary(model, print_fn=lambda x: f.write(x + '\n'))
+    with open(os.path.join(stage_train_dir, 'model_summary.log'), 'w') as f:
+            utils.print_model_summary(model, print_fn=lambda x: f.write(x + '\n'))
+        
+
+
+    # print optimizations
+    with open(os.path.join(stage_train_dir, 'optimizer.json'), 'w') as f:
+        json.dump(model.optimizer.get_config(), f, indent=4, sort_keys=True)
 #====================================================================
 
 
-def __create_and_compile_model(input_shape, K, dropout_rate):
+def create_and_compile_model(input_shape, K, dropout_rate):
 
     model = design.create_model(input_shape, K, dropout_rate=dropout_rate)
 
@@ -80,9 +80,9 @@ def train(X, y,
         #strategy = tf.distribute.MirroredStrategy(devices=devices_names[:n_gpus])
         strategy = tf.distribute.MirroredStrategy()
         with strategy.scope():
-            model = __create_and_compile_model((L,L,1), K, dropout_rate)
+            model = create_and_compile_model((L,L,1), K, dropout_rate)
     else:
-        model = __create_and_compile_model((L,L,1), K, dropout_rate)
+        model = create_and_compile_model((L,L,1), K, dropout_rate)
 
   
 
@@ -115,10 +115,9 @@ def train(X, y,
     # %%
     # print model info
     if dump_model_summary:
-        __print_model_summary(model, stage_train_dir)
+        print_model_summary(model, stage_train_dir)
         
-
-
+        
 
     # %%
     # training the model
@@ -129,13 +128,14 @@ def train(X, y,
                         batch_size=batch_size)
 
     if save_model:
-        model_path = os.path.join(stage_train_dir, 'saved-model.h5')
-        model.save(model_path)
+        model.save(os.path.join(stage_train_dir, 'saved-model.h5'))
 
 
     if dump_history:
-        with open(os.path.join(stage_train_dir, 'history.pickle'),'wb') as f:
-            pickle.dump(history.history, f)
+        utils.write_numpy_dic_to_json(history.history, 
+                                    os.path.join(stage_train_dir, 'history.json')
+                                    )
+       
 
 
 

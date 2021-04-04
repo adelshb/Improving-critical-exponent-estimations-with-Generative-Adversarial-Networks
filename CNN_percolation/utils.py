@@ -1,6 +1,7 @@
 
 import os
 import sys
+import pandas as pd
 
 
 def time_to_string(t):
@@ -11,8 +12,14 @@ def make_path(*paths):
     path = os.path.realpath(path)
     return path
 
-def get_model_summary(model, print_fn=None):
+def print_model_summary(model, print_fn=None):
     model.summary(print_fn=print_fn)
+
+
+def write_numpy_dic_to_json(dic, path): 
+    df = pd.DataFrame(dic) 
+    with open(path, 'w') as f:
+        df.to_json(f, indent=4, )
 
 
 
