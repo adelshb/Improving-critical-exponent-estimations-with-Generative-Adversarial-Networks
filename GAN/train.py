@@ -14,13 +14,18 @@
 
 from argparse import ArgumentParser
 import os 
+import glob
 
 from dcgan import make_generator_model, make_discriminator_model
 from utils import *
 
 def main(args):
 
-    
+    train_images = []
+    for filename in glob.glob(os.path.join(args.data_dir, '*.npy')):
+        with open(os.path.join(os.getcwd(), filename), 'r') as f: 
+            train_images.append(np.load(f))
+    train_labels = [0]*len(train_images)
 
     generator = make_generator_model()
     discriminator = make_discriminator_model()
