@@ -100,8 +100,8 @@ def train(X, y,
         checkpoint_file = make_path(stage_train_dir, "ckpt-best.h5")
         checkpoint_cb = ModelCheckpoint(checkpoint_file, 
                                         save_best_only=True, 
-                                        monitor='val_accuracy',
-                                        save_weights_only=True) 
+                                        monitor='val_loss',
+                                        save_weights_only=False) 
         callbacks += [checkpoint_cb]
     
     if set_earlystopping:
