@@ -117,7 +117,7 @@ if __name__ == '__main__':
     parser.add_argument("--p_increment", type=float, default=0.02)
     parser.add_argument("--round_digit", type=int, default=2)
 
-    parser.add_argument("--random_state", action='store', type=int, default=42)
+    parser.add_argument("--random_state", action='store', type=int, default=None)
     
     parser.add_argument("--test_size", type=float, default=0.20)
     parser.add_argument("--patience", type=int, default=20)
