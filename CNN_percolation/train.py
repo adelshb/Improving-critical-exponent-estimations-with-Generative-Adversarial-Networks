@@ -14,10 +14,10 @@ import json
 #====================================================================
 def print_model_summary(model, stage_train_dir):
 
-    utils.print_model_summary(model, print_fn=print)
-    
+    model.summary(print_fn=print)
+
     with open(os.path.join(stage_train_dir, 'model_summary.log'), 'w') as f:
-            utils.print_model_summary(model, print_fn=lambda x: f.write(x + '\n'))
+            model.summary(print_fn=lambda x: f.write(x + '\n'))
         
 
 
