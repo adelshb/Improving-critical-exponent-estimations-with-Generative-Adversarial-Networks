@@ -107,7 +107,7 @@ def plot_history(history_path):
         dframe = pd.read_json(history_path)
 
         dfrme_loss = dframe[['loss', 'val_loss']]
-        dfrme_accu = dframe[['accuracy', 'val_accuracy']]
+        dfrme_accu = dframe[['sparse_categorical_accuracy', 'val_sparse_categorical_accuracy']]
 
         plt.figure(1)
         dfrme_loss.plot(xlabel='epoch')
@@ -126,8 +126,11 @@ def plot_history(history_path):
 
 def main(args):
 
+
     if os.path.exists(args.trained_dir):
         print('# trained_dir:', args.trained_dir)
+
+
 
         fpath_model = os.path.join(args.trained_dir, args.fname_model)
         fpath_label = os.path.join(args.trained_dir, args.fname_label)
@@ -168,3 +171,5 @@ if __name__ == '__main__':
     main(args)
 
     
+    
+  
