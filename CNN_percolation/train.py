@@ -33,10 +33,10 @@ def create_and_compile_model(input_shape, K, dropout_rate):
     model = design.create_model(input_shape, K, dropout_rate=dropout_rate)
 
     # Compiling the model            
-    opt = tf.keras.optimizers.Adam()
+    opt = tf.keras.optimizers.Adam(lr=1e-4)
     model.compile(optimizer=opt, 
                     loss='sparse_categorical_crossentropy', 
-                    metrics=['accuracy'])
+                    metrics=['sparse_categorical_accuracy'])
     return model
 
 #====================================================================
@@ -136,8 +136,16 @@ def train(X, y,
         utils.write_numpy_dic_to_json(history.history, 
                                     make_path(stage_train_dir, 'history.json')
                                     )
-       
+    
+    
+    loss_test, accuracy_test = model.evaluate(X_test, y_test, verbose=0)
+    print('loss_test={:.3f}, accuracy_test={:.3f}'.format(loss_test, accuracy_test))
 
+    """loaded_model = tf.keras.models.load_model(make_path(stage_train_dir, 'saved-model.h5'))
+    loss_test, accuracy_test = loaded_model.evaluate(X_test, y_test, verbose=0)
+    print('loaded_model_loss_test={:.3f}, loaded_model_accuracy_test={:.3f}'.format(loss_test, accuracy_test))"""
+    
+    
     return model, history
    
 
