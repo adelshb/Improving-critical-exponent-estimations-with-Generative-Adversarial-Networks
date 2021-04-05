@@ -39,29 +39,6 @@ def get_proper_lables_and_y(path_labels_train, labels_test, y_test):
     return labels_train, labels_test_new, I[y_test]
 
 #====================================================================
-def plot_history(history_path):
-
-    if os.path.exists(history_path):
-        dframe = pd.read_json(history_path)
-
-        dfrme_loss = dframe[['loss', 'val_loss']]
-        dfrme_accu = dframe[['accuracy', 'val_accuracy']]
-
-        plt.figure(1)
-        dfrme_loss.plot(xlabel='epoch')
-        plt.savefig('loss.pdf')
-        #plt.show()
-
-        plt.figure(2)
-        dfrme_accu.plot(xlabel='epoch')
-        plt.xlabel('epoch')
-        plt.savefig('accuracy.pdf')
-        #plt.show()
-    else:
-        print ('# There is not history_path:', history_path)
-        return
-
-#====================================================================
 def evaluate_model(model_path, labels_path, args_path):
 
     if os.path.exists(args_path):
@@ -89,7 +66,7 @@ def evaluate_model(model_path, labels_path, args_path):
                                 p_down=args['p_down'], 
                                 p_up=args['p_up'],
                                 p_increment=args['p_increment'],
-                                n_configs_per_p=500,)    
+                                n_configs_per_p=10,)    
 
     if os.path.exists(labels_path):
 
@@ -98,7 +75,7 @@ def evaluate_model(model_path, labels_path, args_path):
         labels_train, labels_test, y_test = get_proper_lables_and_y(
             labels_path, labels, y)
         
-        X_test = X.astype(np.float32)
+        X_test = X #.astype(np.float32)
         
     else:
         print ('# There is not labels_path:', labels_path)
@@ -115,32 +92,47 @@ def evaluate_model(model_path, labels_path, args_path):
     conf_matrix = confusion_matrix(y_test, y_pred, 
                                    labels=np.arange(len(labels_train)))
     
-    plt.figure(figsize=(7,7))
+    plt.figure(figsize=(10,10))
     sns.heatmap(conf_matrix, xticklabels=labels_train, yticklabels=labels_train, 
                 cmap='Blues', annot=True,)
     plt.xlabel('predicted')
-    plt.ylabel('true label')
+    plt.ylabel('true')
     plt.savefig('conf_mat.pdf')
     #plt.show()
     
 #====================================================================
-def main(args, 
-         fname_model = 'saved-model.h5',
-         fname_label = 'labels.json',
-         fname_args = 'args.json',
-         fname_history = 'history.json',
-        ):
+def plot_history(history_path):
 
+    if os.path.exists(history_path):
+        dframe = pd.read_json(history_path)
+
+        dfrme_loss = dframe[['loss', 'val_loss']]
+        dfrme_accu = dframe[['accuracy', 'val_accuracy']]
+
+        plt.figure(1)
+        dfrme_loss.plot(xlabel='epoch')
+        plt.savefig('loss.pdf')
+        #plt.show()
+
+        plt.figure(2)
+        dfrme_accu.plot(xlabel='epoch')
+        plt.xlabel('epoch')
+        plt.savefig('accuracy.pdf')
+        #plt.show()
+    else:
+        print ('# There is not history_path:', history_path)
+        return
+#====================================================================
+
+def main(args):
 
     if os.path.exists(args.trained_dir):
         print('# trained_dir:', args.trained_dir)
 
-
-
-        fpath_model = os.path.join(args.trained_dir, fname_model)
-        fpath_label = os.path.join(args.trained_dir, fname_label)
-        fpath_args = os.path.join(args.trained_dir, fname_args)
-        fpath_history = os.path.join(args.trained_dir, fname_history)
+        fpath_model = os.path.join(args.trained_dir, args.fname_model)
+        fpath_label = os.path.join(args.trained_dir, args.fname_label)
+        fpath_args = os.path.join(args.trained_dir, args.fname_args)
+        fpath_history = os.path.join(args.trained_dir, args.fname_history)
 
 
         # part plot histoy
@@ -165,11 +157,14 @@ if __name__ == '__main__':
     # Model Parameters
     parser.add_argument("--trained_dir", type=str, 
                         default="saved-files/2021.04.04.18.17.23")
+                        
+    parser.add_argument("--fname_model", type=str, default="saved-model.h5")
+    parser.add_argument("--fname_label", type=str, default="labels.json")
+    parser.add_argument("--fname_args", type=str, default="args.json")
+    parser.add_argument("--fname_history", type=str, default="history.json")
 
 
     args = parser.parse_args()
     main(args)
 
     
-    
-  
