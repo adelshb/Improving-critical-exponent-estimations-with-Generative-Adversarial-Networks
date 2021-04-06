@@ -5,3 +5,4 @@ seaborn
 sklearn
 spicy
 tqdm
+ipython

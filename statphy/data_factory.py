@@ -21,9 +21,9 @@ from models.slp import percolation_configuration
 
 # Example
 # python statphy/data_factory.py \
-#     --model square lattice percolation \
+#     --model square_lattice_percolation \
 #     --L 128 \
-#     --crit_parameter 0.5927 \
+#     --crit_parameter 0.5928 \
 #     --sample_per_configuration 100
 
 _available_models = [
@@ -65,10 +65,10 @@ if __name__ == "__main__":
 
     # Model Parameters
     parser.add_argument("--L", type=int, default=128)
-    parser.add_argument("--crit_parameter", type=float)
+    parser.add_argument("--crit_parameter", type=float, default = 0.5928)
 
     # Statistics
-    parser.add_argument("--sample_per_configuration", type=int, default=10)
+    parser.add_argument("--sample_per_configuration", type=int, default=1000)
     # parser.add_argument("--param_range_start", type=float(), default=0)
     # parser.add_argument("--param_range_end", type=float(), default=1)
     # parser.add_argument("--param_range_delta", type=float(), default=0.01)
