@@ -21,7 +21,8 @@ def main(args, print_args=True):
     
     
     # create the data set; X, y and labels
-    p_arr = np.round(np.arange(args.p_down, args.p_up + 1e-10, args.p_increment, args.round_digit))
+    p_arr = np.round(np.arange(args.p_down, args.p_up + 1e-10, args.p_increment), 
+                     args.round_digit)
     X, y, unique_labels = percolation.generate_data(args.L, p_arr, args.n_configs_per_p)
     
 
