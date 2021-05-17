@@ -4,7 +4,7 @@ import numpy as np
 import train
 from utils import make_path, time_to_string
 from datetime import datetime
-import percolation
+import statphy.percolation
 import tensorflow as tf
 import json
 #====================================================================
