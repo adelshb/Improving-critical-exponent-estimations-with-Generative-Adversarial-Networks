@@ -5,4 +5,4 @@ env/
 .env/
 .vscode/
 data/
-saved-models/
+saved_models/
