@@ -19,6 +19,7 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # for ignoring the some of tf warnings
 
 #from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
+import tensorflow as tf 
 
 from dcgan import make_generator_model, make_discriminator_model
 from utils import *
@@ -84,7 +85,7 @@ if __name__ == "__main__":
 
     # Training parameters
     parser.add_argument("--batch_size", type=int, default=5)
-    parser.add_argument("--epochs", type=int, default=20)
+    parser.add_argument("--epochs", type=int, default=200)
     parser.add_argument("--noise_dim", type=int, default=100)
     # Save model
     parser.add_argument("--save_dir", nargs=1, default=os.getcwd())
