@@ -91,7 +91,7 @@ if __name__ == '__main__':
 
     
     # Model Parameters
-    parser.add_argument("--odir", type=str, default='saved-files')
+    parser.add_argument("--odir", type=str, default='saved_files')
     parser.add_argument("--L", type=int, default=32)
     parser.add_argument("--n_configs_per_p", type=int, default=10)
 
