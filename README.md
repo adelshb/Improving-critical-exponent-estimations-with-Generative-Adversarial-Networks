@@ -9,6 +9,7 @@ The neural network is written in python using tensorflow.
 
 ```shell
 pip install -r requirements.txt
+pip install -e .
 ```
 ## Control parameter estimation via CNN
 
@@ -32,7 +33,7 @@ pip install -r requirements.txt
        --dropout_rate 0          
  ```
 
- ### Example: Generate and save .
+ ### Example: Generate and save configurations.
 
  ```shell
     python statphy/data_factory.py \
