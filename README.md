@@ -18,7 +18,7 @@ pip install -e .
 
  ```shell
     python3 CNN_percolation/main.py             \
-       --odir "saved-files"      \
+       --odir "saved_files"      \
        --L 128                    \
        --p_down 0.5               \
        --p_up 0.7                 \
