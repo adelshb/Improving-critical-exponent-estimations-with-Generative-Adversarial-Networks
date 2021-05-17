@@ -10,6 +10,28 @@ The neural network is written in python using tensorflow.
 ```shell
 pip install -r requirements.txt
 ```
+## Control parameter estimation via CNN
+
+[CNN](https://drive.google.com/file/d/1672V_ZPCHSVUohgRHw1nHLROkyo8_rJI/view?usp=sharing)
+
+ ```shell
+    python3 CNN/main.py             \
+       --odir "saved-files"      \
+       --L 128                    \
+       --p_down 0.5               \
+       --p_up 0.7                 \
+       --p_increment 0.02         \
+       --round_digit 2            \
+       --epochs 100              \
+       --n_configs_per_p 1000     \
+       --n_gpus 1                 \
+       --patience 10              \
+       --test_size 0.2            \
+       --batch_size 32          \
+       --random_state 42          \
+       --dropout_rate 0          
+ ```
+
  ### Example: Generate and save .
 
  ```shell
