@@ -2,7 +2,7 @@ import sys
 sys.path.append("../statphy")
 
 from argparse import ArgumentParser
-import os, sys
+import os
 import numpy as np
 import train
 from utils import make_path, time_to_string
@@ -10,44 +10,26 @@ from datetime import datetime
 import statphy.models.percolation
 import tensorflow as tf
 import json
-#====================================================================
-def get_data_set(**kwargs):
+from utils import get_dirs
 
-    p_down, p_up, p_increment = kwargs['p_down'], kwargs['p_up'], kwargs['p_increment']
-    round_digit = kwargs['round_digit']
-    L, n_configs_per_p = kwargs['L'], kwargs['n_configs_per_p']
-
-    p_arr = np.round(np.arange(p_down, p_up+1e-10, p_increment), round_digit)
-    X, y, unique_labels = percolation.generate_data(L, p_arr, n_configs_per_p)
-    
-    return X, y, unique_labels
 #====================================================================
-def get_dirs(odir='saved-files', folder_name=''): 
-    stage_train_dir = make_path(odir, folder_name) 
-    os.makedirs(stage_train_dir, exist_ok=True) 
-    return stage_train_dir
-#====================================================================
-
 def main(args, print_args=True):
+    
     start_time = datetime.now()
 
     # init seed
     np.random.seed(args.random_state)
     tf.random.set_seed(args.random_state)
     
+    
+    # create the data set; X, y and labels
+    p_arr = np.round(np.arange(args.p_down, args.p_up + 1e-10, args.p_increment, args.round_digit)
+    X, y, unique_labels = percolation.generate_data(args.L, p_arr, args.n_configs_per_p)
+    
 
-    X, y, labels = get_data_set(L=args.L, 
-                                round_digit=args.round_digit, 
-                                p_down=args.p_down, 
-                                p_up=args.p_up, 
-                                p_increment=args.p_increment,
-                                n_configs_per_p=args.n_configs_per_p,
-                                )    
-
-    #X = X.astype(np.float32)
-
-    stage_train_dir = get_dirs(odir=args.odir, 
-                               folder_name=time_to_string(start_time))
+    # create the stage directory
+    stage_train_dir = make_path(args.odir, time_to_string(start_time)) 
+    os.makedirs(stage_train_dir, exist_ok=True)
 
 
     # save unique_lables in stage_train_dir
