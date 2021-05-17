@@ -10,7 +10,6 @@ from datetime import datetime
 import statphy.models.percolation
 import tensorflow as tf
 import json
-from utils import get_dirs
 
 #====================================================================
 def main(args, print_args=True):
