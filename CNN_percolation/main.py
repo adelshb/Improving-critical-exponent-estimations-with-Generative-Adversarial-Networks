@@ -1,15 +1,14 @@
-import sys
-sys.path.append("../statphy")
-
-from argparse import ArgumentParser
 import os
+from argparse import ArgumentParser
+import json
+from datetime import datetime
+
 import numpy as np
+import tensorflow as tf
+
 import train
 from utils import make_path, time_to_string
-from datetime import datetime
-import statphy.models.percolation
-import tensorflow as tf
-import json
+from statphy.models import percolation
 
 #====================================================================
 def main(args, print_args=True):
@@ -22,7 +21,7 @@ def main(args, print_args=True):
     
     
     # create the data set; X, y and labels
-    p_arr = np.round(np.arange(args.p_down, args.p_up + 1e-10, args.p_increment, args.round_digit)
+    p_arr = np.round(np.arange(args.p_down, args.p_up + 1e-10, args.p_increment, args.round_digit))
     X, y, unique_labels = percolation.generate_data(args.L, p_arr, args.n_configs_per_p)
     
 
@@ -33,7 +32,7 @@ def main(args, print_args=True):
 
     # save unique_lables in stage_train_dir
     with open(make_path(stage_train_dir, 'labels.json'), 'w') as f:
-        json.dump(labels, f, indent=4,)
+        json.dump(unique_labels, f, indent=4,)
 
     
     vargs = vars(args)
