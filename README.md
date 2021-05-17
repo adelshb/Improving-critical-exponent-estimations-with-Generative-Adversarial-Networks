@@ -15,7 +15,7 @@ pip install -r requirements.txt
 [CNN](https://drive.google.com/file/d/1672V_ZPCHSVUohgRHw1nHLROkyo8_rJI/view?usp=sharing)
 
  ```shell
-    python3 CNN/main.py             \
+    python3 CNN_percolation/main.py             \
        --odir "saved-files"      \
        --L 128                    \
        --p_down 0.5               \

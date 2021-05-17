@@ -36,17 +36,7 @@ def main(args):
     if not os.path.exists(PATH):
         os.makedirs(PATH)
 
-    # param_range = np.arrange(args.param_range_start, args.param_range_end, args.param_range_delta)
-
     if args.model == "square_lattice_percolation":
-        # # Generate configurations within the selected range 
-        # for p in param_range:
-        #     if not os.path.exists(args.path + str(p)):
-        #         os.makedirs(args.path + str(p))
-        #     for i in range(args.sample_per_configuration):
-        #         x = percolation_configuration(args.L, p)
-        #         numpy.save(str(p) + "_" + str(i), x)
-
         # Generate configurations for critical parameter
         if args.crit_parameter:
             if not os.path.exists(PATH + "/" + str(args.crit_parameter) + "/"):
@@ -69,14 +59,9 @@ if __name__ == "__main__":
 
     # Statistics
     parser.add_argument("--sample_per_configuration", type=int, default=10)
-    # parser.add_argument("--param_range_start", type=float(), default=0)
-    # parser.add_argument("--param_range_end", type=float(), default=1)
-    # parser.add_argument("--param_range_delta", type=float(), default=0.01)
 
     # Save data
     parser.add_argument("--path", nargs=1, default=os.getcwd())
 
     args = parser.parse_args()
     main(args)
-
-#python statphy/data_factory.py --crit_parameter 0.5927

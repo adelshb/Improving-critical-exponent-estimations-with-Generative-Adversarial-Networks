@@ -1,10 +1,13 @@
+import sys
+sys.path.append("../statphy")
+
 from argparse import ArgumentParser
 import os, sys
 import numpy as np
 import train
 from utils import make_path, time_to_string
 from datetime import datetime
-import statphy.percolation
+import statphy.models.percolation
 import tensorflow as tf
 import json
 #====================================================================
