@@ -9,8 +9,8 @@
 * tqdm
 
 ```shell
-pip install -r requirements.txt
-pip install -e .
+pip install .
+
 ```
 ## Control parameter estimation via CNN
 

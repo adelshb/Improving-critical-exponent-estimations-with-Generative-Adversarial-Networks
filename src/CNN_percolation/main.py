@@ -6,9 +6,9 @@ from datetime import datetime
 import numpy as np
 import tensorflow as tf
 
-import train
-from utils import make_path, time_to_string
-from statphy.models import percolation
+import src.CNN_percolation.train
+from src.CNN_percolation.utils import make_path, time_to_string
+from src.statphy.models import percolation
 
 #====================================================================
 def main(args, print_args=True):

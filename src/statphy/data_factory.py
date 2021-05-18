@@ -17,7 +17,7 @@ import os
 
 import numpy as np
 
-from models.percolation import percolation_configuration
+from src.statphy.models.percolation import percolation_configuration
 
 # Example
 # python statphy/data_factory.py \
