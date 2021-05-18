@@ -8,9 +8,9 @@ from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoa
 from tensorflow.keras.models import Model
 from sklearn.model_selection import train_test_split
 
-import design
-import utils
-from utils import make_path
+import src.CNN_percolation.design
+import src.CNN_percolation.utils
+from src.CNN_percolation.utils import make_path
 import json
 #====================================================================
 def print_model_summary(model, stage_train_dir):

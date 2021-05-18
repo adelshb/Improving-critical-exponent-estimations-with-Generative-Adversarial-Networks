@@ -3,5 +3,5 @@ numpy
 matplotlib
 seaborn
 sklearn
-spicy
+scipy
 tqdm
