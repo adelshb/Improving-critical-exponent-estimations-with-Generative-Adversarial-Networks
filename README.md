@@ -7,6 +7,7 @@
 * sklearn
 * spicy
 * tqdm
+* jupyter
 
 ```shell
 pip install .
