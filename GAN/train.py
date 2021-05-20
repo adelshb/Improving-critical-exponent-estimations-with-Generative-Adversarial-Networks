@@ -14,6 +14,7 @@
 
 from argparse import ArgumentParser
 import glob
+import time
 import numpy as np
 import os 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # for ignoring the some of tf warnings
