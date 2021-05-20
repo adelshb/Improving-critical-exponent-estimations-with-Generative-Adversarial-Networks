@@ -1,8 +1,8 @@
-tensorflow-gpu==2.0.0rc1
+tensorflow
 numpy
 matplotlib
 seaborn
 sklearn
-spicy
+scipy
 tqdm
-ipython
+jupyter
