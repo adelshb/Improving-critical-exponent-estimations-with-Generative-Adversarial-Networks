@@ -41,6 +41,8 @@ def train_step(images, generator, discriminator, generator_optimizer, discrimina
     generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
     discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
 
+    return gen_loss, disc_loss
+
 def generate_and_save_images(model, epoch, test_input):
   predictions = model(test_input, training=False)
 

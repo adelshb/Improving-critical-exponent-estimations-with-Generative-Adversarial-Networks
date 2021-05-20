@@ -55,10 +55,10 @@ if __name__ == "__main__":
 
     # Model Parameters
     parser.add_argument("--L", type=int, default=128)
-    parser.add_argument("--crit_parameter", type=float)
+    parser.add_argument("--crit_parameter", type=float, default=0.5928)
 
     # Statistics
-    parser.add_argument("--sample_per_configuration", type=int, default=10)
+    parser.add_argument("--sample_per_configuration", type=int, default=100)
 
     # Save data
     parser.add_argument("--path", nargs=1, default=os.getcwd())
