@@ -133,7 +133,7 @@ def train(X, y,
 
 
     if dump_history:
-        utils.write_numpy_dic_to_json(history.history, 
+        src.CNN_percolation.utils.write_numpy_dic_to_json(history.history, 
                                     make_path(stage_train_dir, 'history.json')
                                     )
     
