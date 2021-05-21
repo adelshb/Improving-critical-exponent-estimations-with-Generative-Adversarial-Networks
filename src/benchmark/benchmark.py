@@ -5,14 +5,14 @@ import json
 
 from src.statphy.models.percolation import generate_data
 
-model = tf.keras.models.load_model("/Users/matthieu.sarkis/git_repos/Improving-critical-exponent-estimations-with-Generative-Adversarial-Networks/saved_models/CNN_L128_N10000/saved-model.h5")
+model = tf.keras.models.load_model("saved_models/CNN_L128_N10000/saved-model.h5")
 
 X, _, _ = generate_data(L=128, 
                         p_arr=[0.5928],
                         max_configs_per_p=1000)
 
-with open("/Users/matthieu.sarkis/git_repos/Improving-critical-exponent-estimations-with-Generative-Adversarial-Networks/saved_models/CNN_L128_N10000/labels.json", 'r') as f:
-        labels = json.load(f)
+with open("saved_models/CNN_L128_N10000/labels.json", 'r') as f:
+    labels = json.load(f)
 
 reversed_labels = {value : float(key) for (key, value) in labels.items()}
 
