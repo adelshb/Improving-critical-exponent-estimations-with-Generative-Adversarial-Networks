@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import tensorflow as tf
 import ast
+import json
 
 from src.statphy.models.percolation import generate_data
 
@@ -10,11 +11,10 @@ X, _, _ = generate_data(L=128,
                         p_arr=[0.5928],
                         max_configs_per_p=1000)
 
-file = open("/Users/matthieu.sarkis/git_repos/Improving-critical-exponent-estimations-with-Generative-Adversarial-Networks/saved_models/CNN_L128_N10000/labels.json", "r")
-contents = file.read().strip()
-temp = ast.literal_eval(contents)
-file.close()
-reversed_labels = {value : float(key) for (key, value) in temp.items()}
+with open("/Users/matthieu.sarkis/git_repos/Improving-critical-exponent-estimations-with-Generative-Adversarial-Networks/saved_models/CNN_L128_N10000/labels.json", 'r') as f:
+        labels = json.load(f)
+
+reversed_labels = {value : float(key) for (key, value) in labels.items()}
 
 y_pred = model.predict(X).argmax(axis=1)
 y_pred = [reversed_labels[i] for i in y_pred]
