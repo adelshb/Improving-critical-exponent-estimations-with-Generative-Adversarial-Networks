@@ -55,8 +55,8 @@ def get_all_measures(imgs,
     """
 
     N = len(imgs)      # the number of images
-    lx, ly = imgs[0].shape 
-    img_size = lx * ly
+    img_shape = imgs[0].shape 
+
 
     if show_progress:
         import tqdm
@@ -94,7 +94,7 @@ def get_all_measures(imgs,
 
         # we calculate the gyration radius for each cluster
         rs2 = np.zeros(len(mlabel_list), dtype=float) 
-        for i, j in itertools.product(range(lx), range(ly)):
+        for i, j in itertools.product(range(img_shape[0]), range(img_shape[1])):
             indx = label[i, j] # the label at position (i, j)
             if indx >= 0:
                 dr = np.array([i, j]) - cm[indx]
@@ -121,6 +121,8 @@ def get_all_measures(imgs,
             all_xi[im] = np.sum(2 * rs2 * mass * mass) / msum2
 
     measures = {
+        'N' : N,
+        'shape' : img_shape,
         'all_mass' : all_mass,
         'all_Rs2' : all_Rs2,
         'all_chi' : all_chi, 
@@ -172,7 +174,3 @@ def cluster_number_density(all_mass, img_size, N,
         # since s[0]=0, we dont need it
         return histogram.hist(s[1:], ns[1:], nbins=nbins, **kwargs) 
     
-
-   
-   
-
