@@ -6,8 +6,8 @@ from datetime import datetime
 import numpy as np
 import tensorflow as tf
 
-import src.CNN_percolation.train
-from src.CNN_percolation.utils import make_path, time_to_string
+import train
+from utils import make_path, time_to_string
 from src.statphy.models import percolation
 
 #====================================================================
@@ -51,7 +51,7 @@ def main(args, print_args=True):
         for key in vargs:
             print('# {} = {}'.format(key, vargs[key]))
         
-        print('# number_of_labels = {}'.format(len(labels)))
+        print('# number_of_labels = {}'.format(len(unique_labels)))
         print('# stage_train_dir = {}'.format(stage_train_dir))
         print('# X.shape={}  y.shape={}'.format(X.shape, y.shape))
         print(72*'=')
@@ -66,7 +66,6 @@ def main(args, print_args=True):
                                  patience=args.patience,
                                  test_size=args.test_size,
                                  epochs=args.epochs,
-                                 n_gpus=args.n_gpus,
                                  batch_size=args.batch_size,    
                                  dropout_rate=args.dropout_rate,
                                 )
@@ -108,10 +107,6 @@ if __name__ == '__main__':
     parser.add_argument("--batch_size", action='store', type=int, default=32)
     
     parser.add_argument("--dropout_rate", type=float, default=0)
-    
-    
-
-    parser.add_argument('--n_gpus', type=int, default=1)
     
    
     args = parser.parse_args()

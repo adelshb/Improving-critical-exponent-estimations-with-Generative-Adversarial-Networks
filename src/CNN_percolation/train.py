@@ -8,44 +8,13 @@ from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoa
 from tensorflow.keras.models import Model
 from sklearn.model_selection import train_test_split
 
-import src.CNN_percolation.design
-import src.CNN_percolation.utils
-from src.CNN_percolation.utils import make_path
-import json
-#====================================================================
-def print_model_summary(model, stage_train_dir):
-
-    model.summary(print_fn=print)
-
-    with open(make_path(stage_train_dir, 'model_summary.log'), 'w') as f:
-            model.summary(print_fn=lambda x: f.write(x + '\n'))
-        
-
-
-    # print optimizations
-    with open(make_path(stage_train_dir, 'optimizer.json'), 'w') as f:
-        json.dump(model.optimizer.get_config(), f, indent=4, sort_keys=True)
-#====================================================================
-
-
-def create_and_compile_model(input_shape, K, dropout_rate):
-
-    model = design.create_model(input_shape, K, dropout_rate=dropout_rate)
-
-    # Compiling the model            
-    opt = tf.keras.optimizers.Adam(lr=1e-4)
-    model.compile(optimizer=opt, 
-                    loss='sparse_categorical_crossentropy', 
-                    metrics=['sparse_categorical_accuracy'])
-    return model
-
-#====================================================================
+import design
+import utils
 
 def train(X, y,
           random_state=42,
           test_size=0.20,
           stage_train_dir='.',
-          n_gpus=1,
           patience=10,
           epochs=10,
           batch_size=None,
@@ -62,7 +31,6 @@ def train(X, y,
          ):
 
       
-    # %%
     N, L = X.shape[0], X.shape[1]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, 
                                                         random_state=random_state, 
@@ -70,26 +38,17 @@ def train(X, y,
     K = len(np.unique(y_train))  
     
 
-    
-    # %%
-    # GPU distribution
-    device_type = 'GPU'
-    devices = tf.config.experimental.list_physical_devices(device_type)
+    # design the architecture of model
+    model = design.create_model((L, L, 1), K, dropout_rate=dropout_rate)
 
-    if len(devices) > 1 and n_gpus > 1 :
-        #devices_names = [d.name.split('e:')[1] for d in devices]
-        #strategy = tf.distribute.MirroredStrategy(devices=devices_names[:n_gpus])
-        strategy = tf.distribute.MirroredStrategy()
-        with strategy.scope():
-            model = create_and_compile_model((L,L,1), K, dropout_rate)
-    else:
-        model = create_and_compile_model((L,L,1), K, dropout_rate)
+    # compile the model            
+    opt = tf.keras.optimizers.Adam(learning_rate=1e-4)
+    model.compile(optimizer=opt, 
+                  loss='sparse_categorical_crossentropy', 
+                  metrics=['sparse_categorical_accuracy'])
+        
 
-  
-
-    # %%
-    # Callbacks
-    
+    # Callbacks  
     callbacks = []
     
     if set_lr_scheduler:
@@ -97,7 +56,7 @@ def train(X, y,
         callbacks += [lr_scheduler]
 
     if set_checkpoint:
-        checkpoint_file = make_path(stage_train_dir, "ckpt-best.h5")
+        checkpoint_file = utils.make_path(stage_train_dir, "ckpt-best.h5")
         checkpoint_cb = ModelCheckpoint(checkpoint_file, 
                                         save_best_only=True, 
                                         monitor='val_loss',
@@ -113,14 +72,11 @@ def train(X, y,
         callbacks += [tensor_board]
 
 
-    # %%
     # print model info
     if dump_model_summary:
-        print_model_summary(model, stage_train_dir)
-        
+        utils.print_model_summary(model, stage_train_dir)
         
 
-    # %%
     # training the model
     history = model.fit(X_train, y_train,  
                         validation_data=(X_test, y_test), 
@@ -129,12 +85,12 @@ def train(X, y,
                         batch_size=batch_size)
 
     if save_model:
-        model.save(make_path(stage_train_dir, 'saved-model.h5'))
+        model.save(utils.make_path(stage_train_dir, 'saved-model.h5'))
 
 
     if dump_history:
         utils.write_numpy_dic_to_json(history.history, 
-                                    make_path(stage_train_dir, 'history.json')
+                                    utils.make_path(stage_train_dir, 'history.json')
                                     )
     
     
