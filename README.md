@@ -37,7 +37,7 @@ pip install .
  ### Example: Generate and save configurations.
 
 ```shell
-    python statphy/data_factory.py \
+    python src/statphy/data_factory.py \
         --model square_lattice_percolation \
         --L 64 128 \
         --control_parameter 0.5928 0.7 \
