@@ -10,5 +10,7 @@ setup(
                      'sklearn',
                      'scipy',
                      'tqdm',
-                     'jupyter']
+                     'jupyter',
+                     'pandas',
+                    ]
 )
