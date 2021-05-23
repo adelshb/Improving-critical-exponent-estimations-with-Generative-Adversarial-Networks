@@ -5,7 +5,7 @@
 * Python 3.8+
 * Tensorflow
 * sklearn
-* spicy
+* scipy
 * tqdm
 * jupyter
 
