@@ -20,7 +20,7 @@ def get_all_measures(imgs,
                      show_progress = True,
                     ):
     """
-    Compute the gemetrical measures of a serie of configurations
+    Compute the geometric measures of a serie of configurations
     and put in a list.
 
     Parameters
