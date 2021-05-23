@@ -8,6 +8,7 @@
 * scipy
 * tqdm
 * jupyter
+* pandas
 
 ```shell
 pip install .
