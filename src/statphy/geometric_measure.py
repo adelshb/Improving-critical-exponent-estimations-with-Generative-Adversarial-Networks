@@ -13,13 +13,14 @@
 """ Computing the geometric measures of clusters """
 
 import numpy as np
+from numpy.testing._private.utils import measure
 from scipy.ndimage import measurements
 import itertools
 
-def get_all_measures(imgs, 
-                     target_color = 1,
-                     show_progress = True,
-                    ):
+def get_measure(imgs, 
+                target_color = 1,
+                show_progress = True,
+               ):
     """
     Compute the geometric measures of a serie of configurations
     and put in a list.
@@ -35,23 +36,24 @@ def get_all_measures(imgs,
 
     Returns
     ----------
-    all_mass : array int
-        list of mass of each cluster over all configurations
-    all_Rs2 : array float
-        list of gyration radius of each cluster over all configurations
-    all_chi : array float
-        list of chi over all configurations.
-        chi is the average size of a cluster connected to random point. 
-    all_xi : array float
-        list of xi over all configurations.
-        xi is the correlation length
-    all_big : array int
-        list of biggest cluster over all configurations.
-        big is the size of biggest cluster for each configruation.
-    all_M : array int
-        list of M over all configurations.
-        M is the mass of the spanning (percolated) cluster for each configruation.
-        If we dont have an spanning cluster, then M=0
+    measure : dictionary which contains
+        all_mass : array int
+            list of mass of each cluster over all configurations
+        all_Rs2 : array float
+            list of gyration radius of each cluster over all configurations
+        all_chi : array float
+            list of chi over all configurations.
+            chi is the average size of a cluster connected to random point. 
+        all_xi : array float
+            list of xi over all configurations.
+            xi is the correlation length
+        all_big : array int
+            list of biggest cluster over all configurations.
+            big is the size of biggest cluster for each configruation.
+        all_M : array int
+            list of M over all configurations.
+            M is the mass of the spanning (percolated) cluster for each configruation.
+            If we dont have an spanning cluster, then M=0
    
     """
 
@@ -93,7 +95,7 @@ def get_all_measures(imgs,
         # center of mass of each cluster
         cm = measurements.center_of_mass(site, label, index=mlabel_list)
 
-        # we calculate the gyration radius for each cluster
+        # calculate the gyration radius for each cluster
         rs2 = np.zeros(len(mlabel_list), dtype=float) 
         for i, j in itertools.product(range(img_shape[0]), range(img_shape[1])):
             indx = label[i, j] # the label at position (i, j)
@@ -105,7 +107,7 @@ def get_all_measures(imgs,
         all_Rs2 = np.append(all_Rs2, rs2)
 
         # find the spanning cluster along x axis
-        # Since there is no preference for axes, we just consider x axis
+        # since there is no preference for axes, we just consider x axis
         perc_x = np.intersect1d(label[0,:], label[-1,:])
         perc = perc_x[np.where(perc_x >= 0)] 
         if len(perc) > 0: 
@@ -115,13 +117,13 @@ def get_all_measures(imgs,
         msum  = np.sum(mass)
         msum2 = np.sum(mass * mass)
         if msum > 0:
-            # calculate Sp = [sum s'^2] / [sum s']
+            # calculate chi = [sum s^2] / [sum s]
             all_chi[im] = msum2 / msum
 
-            # calculate xi = [sum 2*Rs'^2 * s'^2] / [sum s'^2]
+            # calculate xi = [sum 2*Rs^2 * s^2] / [sum s^2]
             all_xi[im] = np.sum(2 * rs2 * mass * mass) / msum2
 
-    measures = {
+    measure = {
         'N' : N,
         'shape' : img_shape,
         'all_mass' : all_mass,
@@ -132,7 +134,7 @@ def get_all_measures(imgs,
         'all_M' : all_M,
         }
 
-    return measures
+    return measure
 
 
 def cluster_number_density(all_mass, img_size, N, 
@@ -171,7 +173,64 @@ def cluster_number_density(all_mass, img_size, N,
         return ns
     else:
         import histogram
+
         s = np.arange(len(ns))
         # since s[0]=0, we dont need it
         return histogram.hist(s[1:], ns[1:], nbins=nbins, **kwargs) 
     
+
+
+def measure_statistics(measure,
+                       nbins_for_ns = 53):
+    """
+    This calculates the statistics of measures
+
+    Parameters
+    ----------
+    measure : dictionay
+        measure for clusters.
+    nbins_for_ns : int
+        number of bins for calculation of cluster number density
+
+    Returns
+    ----------
+    stat : dictionary
+    """
+
+    N = measure['N']
+    img_size = np.product(measure['shape'])
+
+    stat = {}
+    ns = cluster_number_density(measure['all_mass'], 
+                                img_size = img_size, 
+                                N = N, 
+                                nbins = nbins_for_ns
+                               )
+    stat['ns'] = ns
+    stat['chi'] = np.average(measure['all_chi'])
+    stat['xi'] = np.average(measure['all_xi'])
+    stat['Pinf'] = np.average(measure['all_big']) / img_size
+    stat['M'] = np.average(measure['all_M'])
+    stat['Ps'] = np.average(measure['all_M'] > 0)
+
+    return stat
+    
+
+
+if __name__ == '__main__':
+
+    img1 = np.array([[0,0,1,1,0,0],
+                     [0,0,1,1,0,0],
+                     [1,1,0,0,1,0],
+                     [0,0,0,1,0,0]])
+    img2 = np.array([[0,1,1,0,0,0],
+                     [0,1,1,1,0,0],
+                     [1,1,0,0,1,0],
+                     [0,1,0,1,0,0]])
+
+    imgs = [img1, img2]
+    # get the mesures related to the configurations
+    measure = get_measure(imgs)
+
+    # get the statistics of measures
+    stat = measure_statistics(measure)
