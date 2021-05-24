@@ -71,7 +71,6 @@ def main(args, print_args=True):
                                 )
 
 
-
     # we have reached to the end!
     end_time = datetime.now()
     print(65*'=')
@@ -107,7 +106,6 @@ if __name__ == '__main__':
     parser.add_argument("--batch_size", action='store', type=int, default=32)
     
     parser.add_argument("--dropout_rate", type=float, default=0)
-    
    
     args = parser.parse_args()
     main(args)

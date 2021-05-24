@@ -19,7 +19,6 @@ def write_numpy_dic_to_json(dic, path):
     with open(path, 'w') as f:
         df.to_json(f, indent=4, )
 
-
 def print_model_summary(model, path):
 
     model.summary(print_fn=print)
@@ -30,6 +29,3 @@ def print_model_summary(model, path):
     # print optimizations
     with open(make_path(path, 'optimizer.json'), 'w') as f:
         json.dump(model.optimizer.get_config(), f, indent=4, sort_keys=True)
-
-
-

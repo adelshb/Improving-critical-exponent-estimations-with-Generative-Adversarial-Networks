@@ -1,4 +1,4 @@
-# Criticality
+# Improving critical exponent estimations with Generative Adversarial Networks
 
 ## Requirements
 
@@ -14,12 +14,22 @@
 pip install .
 
 ```
+## Generate and save configurations.
+
+```shell
+    python src/statphy/data_factory.py \
+        --model square_lattice_percolation \
+        --L 128 \
+        --crit_parameter 0.5928 \
+        --sample_per_configuration 100
+```
+
 ## Control parameter estimation via CNN
 
 [CNN](https://drive.google.com/file/d/1672V_ZPCHSVUohgRHw1nHLROkyo8_rJI/view?usp=sharing)
 
  ```shell
-    python3 src/CNN_percolation/main.py             \
+    python3 CNN_percolation/main.py             \
        --odir "saved_files"      \
        --L 128                    \
        --p_down 0.5               \
@@ -35,16 +45,24 @@ pip install .
        --dropout_rate 0          
  ```
 
- ### Example: Generate and save configurations.
+## Data augmentation via GAN
+
+### Train GAN
+
+Make sure that configurations have been created first (at "/data/0.5928" in the following example).
 
 ```shell
-    python src/statphy/data_factory.py \
-        --model square_lattice_percolation \
-        --L 64 128 \
-        --control_parameter 0.5928 0.7 \
-        --samples 100 \
-        --path "."
-```
+    python src/GAN/train.py \
+        --data_dir /data/0.5928 \
+        --batch_size 32 \
+        --epochs 200 \
+        --noise_dim 100 \
+        --save_dir /saved-files
+``` 
+
+### Generate configurations with GAN
+
+TO DO
 
 ## License
 [Apache License 2.0](https://github.com/bisonai/mobilenetv3-tensorflow/blob/master/LICENSE)

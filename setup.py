@@ -12,5 +12,4 @@ setup(
                      'tqdm',
                      'jupyter',
                      'pandas',
-                    ]
-)
+                    ])
