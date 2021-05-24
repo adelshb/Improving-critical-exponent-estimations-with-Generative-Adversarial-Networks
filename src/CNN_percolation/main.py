@@ -6,8 +6,8 @@ from datetime import datetime
 import numpy as np
 import tensorflow as tf
 
-import train
-from utils import make_path, time_to_string
+from src.CNN_percolation import train
+from src.CNN_percolation.utils import make_path, time_to_string
 from src.statphy.models import percolation
 
 #====================================================================
@@ -20,7 +20,7 @@ def main(args, print_args=True):
     tf.random.set_seed(args.random_state)
     
     
-    # create the data set; X, y and labels
+    # create the data set; X, y and unique_labels
     p_arr = np.round(np.arange(args.p_down, args.p_up + 1e-10, args.p_increment), 
                      args.round_digit)
     X, y, unique_labels = percolation.generate_data(args.L, p_arr, args.n_configs_per_p)
@@ -90,7 +90,7 @@ if __name__ == '__main__':
 
     
     # Model Parameters
-    parser.add_argument("--odir", type=str, default='saved_files')
+    parser.add_argument("--odir", type=str, default='saved_models')
     parser.add_argument("--L", type=int, default=32)
     parser.add_argument("--n_configs_per_p", type=int, default=10)
 

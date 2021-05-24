@@ -1,15 +1,15 @@
 
-import os, sys
+import os
 import numpy as np
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # for ignoring the some of tf warnings
 import tensorflow as tf
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
-from tensorflow.keras.models import Model
 from sklearn.model_selection import train_test_split
 
-import design
-import utils
+from src.CNN_percolation import design
+from src.CNN_percolation import utils
+
 
 def train(X, y,
           random_state=42,
