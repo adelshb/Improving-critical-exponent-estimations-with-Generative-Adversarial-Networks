@@ -9,5 +9,7 @@ setup(
                      'seaborn',
                      'sklearn',
                      'scipy',
-                     'tqdm']
-)
+                     'tqdm',
+                     'jupyter',
+                     'pandas',
+                    ])

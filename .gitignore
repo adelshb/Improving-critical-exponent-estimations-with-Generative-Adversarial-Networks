@@ -8,3 +8,5 @@ venv/
 data/
 saved_models/
 saved_files/
+*.gif
+
