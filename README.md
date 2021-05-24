@@ -7,7 +7,7 @@
 * cython
 * Tensorflow
 * sklearn
-* scipy
+* scipy==1.5.4
 * tqdm
 * jupyter
 * pandas

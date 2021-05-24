@@ -10,7 +10,8 @@ setup(
                      'matplotlib',
                      'seaborn',
                      'sklearn',
-                     'scipy',
+                     'scipy==1.5.4', # the specific version is because lexicon
+                                     # only has python < 3.7 installed 
                      'tqdm',
                      'jupyter',
                      'pandas',
