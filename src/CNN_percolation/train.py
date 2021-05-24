@@ -80,9 +80,9 @@ def train(X, y,
         model.save(utils.make_path(stage_train_dir, 'saved-model.h5'))
 
     if dump_history:
+
         utils.write_numpy_dic_to_json(history.history, 
-                                    utils.make_path(stage_train_dir, 'history.json')
-                                    )
+                                    utils.make_path(stage_train_dir, 'history.json'))
     
     loss_test, accuracy_test = model.evaluate(X_test, y_test, verbose=0)
     print('loss_test={:.3f}, accuracy_test={:.3f}'.format(loss_test, accuracy_test))

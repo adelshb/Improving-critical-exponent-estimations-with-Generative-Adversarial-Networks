@@ -60,7 +60,7 @@ def main(args, print_args=True):
 
     # %%
     # now train the model
-    model, history = train.train(X, y, 
+    model, history = src.CNN_percolation.train.train(X, y, 
                                  stage_train_dir=stage_train_dir, 
                                  random_state=args.random_state,
                                  patience=args.patience,
