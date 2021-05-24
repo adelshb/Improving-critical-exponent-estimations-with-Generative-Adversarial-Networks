@@ -6,7 +6,7 @@ from datetime import datetime
 import numpy as np
 import tensorflow as tf
 
-import src.CNN_percolation.train
+from src.CNN_percolation import train
 from src.CNN_percolation.utils import make_path, time_to_string
 from src.statphy.models import percolation
 
@@ -20,7 +20,7 @@ def main(args, print_args=True):
     tf.random.set_seed(args.random_state)
     
     
-    # create the data set; X, y and labels
+    # create the data set; X, y and unique_labels
     p_arr = np.round(np.arange(args.p_down, args.p_up + 1e-10, args.p_increment), 
                      args.round_digit)
     X, y, unique_labels = percolation.generate_data(args.L, p_arr, args.n_configs_per_p)
@@ -51,7 +51,7 @@ def main(args, print_args=True):
         for key in vargs:
             print('# {} = {}'.format(key, vargs[key]))
         
-        print('# number_of_labels = {}'.format(len(labels)))
+        print('# number_of_labels = {}'.format(len(unique_labels)))
         print('# stage_train_dir = {}'.format(stage_train_dir))
         print('# X.shape={}  y.shape={}'.format(X.shape, y.shape))
         print(72*'=')
@@ -66,11 +66,9 @@ def main(args, print_args=True):
                                  patience=args.patience,
                                  test_size=args.test_size,
                                  epochs=args.epochs,
-                                 n_gpus=args.n_gpus,
                                  batch_size=args.batch_size,    
                                  dropout_rate=args.dropout_rate,
                                 )
-
 
 
     # we have reached to the end!
@@ -91,7 +89,7 @@ if __name__ == '__main__':
 
     
     # Model Parameters
-    parser.add_argument("--odir", type=str, default='saved_files')
+    parser.add_argument("--odir", type=str, default='saved_models')
     parser.add_argument("--L", type=int, default=32)
     parser.add_argument("--n_configs_per_p", type=int, default=10)
 
@@ -108,11 +106,6 @@ if __name__ == '__main__':
     parser.add_argument("--batch_size", action='store', type=int, default=32)
     
     parser.add_argument("--dropout_rate", type=float, default=0)
-    
-    
-
-    parser.add_argument('--n_gpus', type=int, default=1)
-    
    
     args = parser.parse_args()
     main(args)

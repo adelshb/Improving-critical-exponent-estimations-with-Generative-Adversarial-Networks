@@ -5,9 +5,10 @@
 * Python 3.8+
 * Tensorflow
 * sklearn
-* spicy
+* scipy
 * tqdm
 * jupyter
+* pandas
 
 ```shell
 pip install .
@@ -37,7 +38,6 @@ pip install .
        --round_digit 2            \
        --epochs 100              \
        --n_configs_per_p 1000     \
-       --n_gpus 1                 \
        --patience 10              \
        --test_size 0.2            \
        --batch_size 32          \

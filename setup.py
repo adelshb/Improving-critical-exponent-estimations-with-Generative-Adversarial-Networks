@@ -11,5 +11,5 @@ setup(
                      'scipy',
                      'tqdm',
                      'jupyter',
-                     'imageio']
-)
+                     'pandas',
+                    ])

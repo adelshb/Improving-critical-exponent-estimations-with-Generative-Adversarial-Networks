@@ -6,4 +6,3 @@ sklearn
 scipy
 tqdm
 jupyter
-imageio
