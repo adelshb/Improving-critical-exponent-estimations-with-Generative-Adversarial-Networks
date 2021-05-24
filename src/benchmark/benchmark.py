@@ -43,3 +43,5 @@ y_pred = [reversed_labels[i] for i in y_pred]
 plt.hist(y_pred)
 plt.title("Distribution of the value of p for GAN generated critical configurations")
 plt.savefig('saved_files/hist_GANgenerated_configs.png')
+
+    
