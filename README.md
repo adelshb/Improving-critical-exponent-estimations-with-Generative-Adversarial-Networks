@@ -3,6 +3,8 @@
 ## Requirements
 
 * Python 3.8+
+* wheel
+* cython
 * Tensorflow
 * sklearn
 * scipy
@@ -12,6 +14,8 @@
 
 ```shell
 pip install .
+OR
+python setup.py install
 
 ```
 ## Generate and save configurations.
