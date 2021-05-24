@@ -90,7 +90,7 @@ if __name__ == "__main__":
     parser = ArgumentParser()
 
     # Data
-    parser.add_argument("--data_dir", type=str, default="./data/0.5928/")
+    parser.add_argument("--data_dir", type=str, default="./data/L_128/p_0.5928/")
 
     # Training parameters
     parser.add_argument("--batch_size", type=int, default=50)
