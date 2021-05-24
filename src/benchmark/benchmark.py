@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import tensorflow as tf
-import ast
 import json
 
 from src.statphy.models.percolation import generate_data
