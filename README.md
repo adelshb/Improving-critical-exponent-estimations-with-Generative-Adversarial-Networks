@@ -17,7 +17,7 @@ pip install .
 
 ```shell
     python src/statphy/data_factory.py \
-        --model square lattice percolation \
+        --model square_lattice_percolation \
         --L 128 \
         --crit_parameter 0.5928 \
         --sample_per_configuration 100
