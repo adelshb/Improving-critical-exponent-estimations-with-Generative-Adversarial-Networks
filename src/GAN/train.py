@@ -31,7 +31,7 @@ def main(args):
     for filename in glob.glob(args.data_dir + "*.npy"):
         with open(os.path.join(os.getcwd(), filename), 'rb') as f: 
             train_images.append(np.load(f).reshape(128,128,1))
-
+    
     train_dataset = tf.data.Dataset.from_tensor_slices(train_images).batch(args.batch_size)
 
     generator = make_generator_model()

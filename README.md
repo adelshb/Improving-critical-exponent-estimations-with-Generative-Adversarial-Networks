@@ -62,7 +62,13 @@ Make sure that configurations have been created first (at "/data/0.5928" in the 
 
 ### Generate configurations with GAN
 
-TO DO
+```shell
+    python src/GAN/generate.py \
+        --num 10 \
+        --data_dir ./data/generated/
+        --model_dir ./data/models/gan/ \
+        --noise_dim 100
+```
 
 ### Verify the control parameter of the GAN-generated configurations
 

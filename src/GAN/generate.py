@@ -29,7 +29,7 @@ def main(args):
     for i in range(args.num):
         seed = tf.random.normal([1, args.noise_dim])
         gen = generator(seed, training=False)
-        np.save('./data/generated/{}.png'.format(i), gen)
+        np.save('./data/generated/{}'.format(i), gen)
 
 if __name__ == "__main__":
     parser = ArgumentParser()

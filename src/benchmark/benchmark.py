@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import tensorflow as tf
 import json
-from glob import glob
+import glob
 import numpy as np
 import os
 
@@ -26,7 +26,7 @@ def load_synthetic_config(synthetic_data_path='data/generated'):
     synthetic_configs = []
 
     for file in list_generated_configs:
-        synthetic_configs.append(np.load(file))
+        synthetic_configs.append(np.load(file).reshape(128, 128))
     synthetic_configs = np.array(synthetic_configs)
     
     return synthetic_configs
@@ -42,4 +42,6 @@ y_pred = [reversed_labels[i] for i in y_pred]
 
 plt.hist(y_pred)
 plt.title("Distribution of the value of p for GAN generated critical configurations")
+if not os.path.exists('saved_files'):
+    os.makedirs('saved_files')
 plt.savefig('saved_files/hist_GANgenerated_configs.png')
