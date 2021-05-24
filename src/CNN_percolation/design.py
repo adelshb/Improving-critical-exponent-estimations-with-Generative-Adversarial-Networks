@@ -34,7 +34,7 @@ def create_model(input_shape, K,
     x = keras.layers.Dense(K, activation='softmax')(x)
     model = keras.models.Model(i, x)
     return model
-###########
+
 
     
     
