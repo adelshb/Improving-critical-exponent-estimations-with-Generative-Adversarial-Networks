@@ -12,11 +12,17 @@
 
 ```shell
 pip install .
-OR
-python setup.py install
-
 ```
+
+or with
+
+```shell
+python setup.py install
+```
+
 ## Generate and save configurations.
+
+It is possible to generate a chosen number of configurations for a specific lattice size and for chosen control parameters.
 
 ```shell
     python src/statphy/data_factory.py      \
@@ -29,7 +35,9 @@ python setup.py install
 
 ## Control parameter estimation via CNN
 
-[CNN](https://drive.google.com/file/d/1672V_ZPCHSVUohgRHw1nHLROkyo8_rJI/view?usp=sharing)
+The trained model for control parameter estimation with CNN is available [here](https://drive.google.com/file/d/1672V_ZPCHSVUohgRHw1nHLROkyo8_rJI/view?usp=sharing).
+
+It possible to train a CNN with the following command:
 
  ```shell
     python src/CNN_percolation/main.py  \
@@ -52,15 +60,15 @@ python setup.py install
 
 ### Train GAN
 
-Make sure that configurations have been created first (at "/data/0.5928" in the following example).
+Make sure that configurations have been created first (at "/data/L_128/p_0.5928" in the following example).
 
 ```shell
     python src/GAN/train.py \
-        --data_dir /data/0.5928 \
+        --data_dir /data/L_128/p_0.5928 \
         --batch_size 32 \
         --epochs 200 \
         --noise_dim 100 \
-        --save_dir /saved-files
+        --save_dir /data/models/gan
 ``` 
 
 ### Generate configurations with GAN
