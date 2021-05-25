@@ -3,11 +3,9 @@
 ## Requirements
 
 * Python 3.8+
-* wheel
-* cython
 * Tensorflow
 * sklearn
-* scipy==1.5.4
+* scipy
 * tqdm
 * jupyter
 * pandas
