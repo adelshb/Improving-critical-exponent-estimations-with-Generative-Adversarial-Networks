@@ -15,8 +15,11 @@
 from argparse import ArgumentParser
 import glob
 import time
+import IPython
 import numpy as np
-import os 
+import os
+
+from tensorflow._api.v2 import data 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # for ignoring the some of tf warnings
 
 #from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
@@ -28,9 +31,10 @@ from utils import *
 def main(args):
 
     train_images = []
-    for filename in glob.glob(args.data_dir + "*.npy"):
+    for filename in glob.glob(args.data_dir + "/*.npy"):
         with open(os.path.join(os.getcwd(), filename), 'rb') as f: 
             train_images.append(np.load(f).reshape(128,128,1))
+    
     
     train_dataset = tf.data.Dataset.from_tensor_slices(train_images).batch(args.batch_size)
 
@@ -90,7 +94,7 @@ if __name__ == "__main__":
     parser = ArgumentParser()
 
     # Data
-    parser.add_argument("--data_dir", type=str, default="./data/L_128/p_0.5928/")
+    parser.add_argument("--data_dir", type=str, default="./data/L_128/p_0.5928")
 
     # Training parameters
     parser.add_argument("--batch_size", type=int, default=50)
