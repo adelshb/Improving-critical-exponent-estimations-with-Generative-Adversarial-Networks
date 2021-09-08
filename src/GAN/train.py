@@ -27,12 +27,19 @@ from utils import *
 
 def main(args):
 
-    train_images = []
-    for filename in glob.glob(args.data_dir + "*.npy"):
-        with open(os.path.join(os.getcwd(), filename), 'rb') as f: 
-            train_images.append(np.load(f).reshape(128,128,1))
-    
+    #train_images = []
+    #for filename in glob.glob(os.getcwd() + '/' + args.data_dir + "*.npy"):
+    #    with open(os.path.join(os.getcwd(), filename), 'rb') as f: 
+    #        train_images.append(np.load(f))
+    #
+    #train_images = np.array(train_images).reshape(len(train_images),128,128,1).astype("float32")
+    #train_dataset = tf.data.Dataset.from_tensor_slices(train_images).batch(args.batch_size)
+    filenames = glob.glob(args.data_dir + "/*.npy")
+    train_images = np.array([np.load(fname) for fname in filenames]).reshape(len(filenames),128,128,1).astype(np.float32)
     train_dataset = tf.data.Dataset.from_tensor_slices(train_images).batch(args.batch_size)
+    #train_dataset = train_dataset.map(lambda item: tuple(tf.py_func(read_npy_file, [item], [tf.float32,])))
+
+    #from IPython import embed; embed()
 
     generator = make_generator_model()
     discriminator = make_discriminator_model()
@@ -49,6 +56,7 @@ def main(args):
 
     # num_examples_to_generate = 1
     # seed = tf.random.normal([num_examples_to_generate, args.noise_dim])
+    
     noise = tf.random.normal([args.batch_size, args.noise_dim])
 
     # checkpoint_dir = './data/training_checkpoints'
@@ -56,10 +64,9 @@ def main(args):
 
     # if not os.path.exists('./data/generated/'):
     #     os.makedirs('./data/generated/')
-
+    
     for epoch in range(args.epochs):
         start = time.time()
-
         for image_batch in train_dataset:
             gen_loss, disc_loss = train_step(image_batch, generator, discriminator, generator_optimizer, discriminator_optimizer, cross_entropy, noise)
         print("Epochs {}: generator loss:{}, discriminator loss:{} in {} sec.".format(epoch, gen_loss, disc_loss, time.time()-start))  
@@ -90,14 +97,14 @@ if __name__ == "__main__":
     parser = ArgumentParser()
 
     # Data
-    parser.add_argument("--data_dir", type=str, default="./data/L_128/p_0.5928/")
+    parser.add_argument("--data_dir", type=str, default="./data/L_128/p_0.5928")
 
     # Training parameters
     parser.add_argument("--batch_size", type=int, default=50)
     parser.add_argument("--epochs", type=int, default=200)
     parser.add_argument("--noise_dim", type=int, default=100)
     # Save model
-    parser.add_argument("--save_dir", type=str, default="./data/models/gan/")
+    parser.add_argument("--save_dir", type=str, default="./data/models/gan")
 
     args = parser.parse_args()
     main(args)
