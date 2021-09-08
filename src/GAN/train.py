@@ -49,18 +49,15 @@ def main(args):
     generator_optimizer = tf.keras.optimizers.Adam(1e-4)
     discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
 
-    # checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
-    #                                 discriminator_optimizer=discriminator_optimizer,
-    #                                 generator=generator,
-    #                                 discriminator=discriminator)
+    checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
+                                     discriminator_optimizer=discriminator_optimizer,
+                                     generator=generator,
+                                     discriminator=discriminator)
 
-    # num_examples_to_generate = 1
-    # seed = tf.random.normal([num_examples_to_generate, args.noise_dim])
-    
     noise = tf.random.normal([args.batch_size, args.noise_dim])
 
-    # checkpoint_dir = './data/training_checkpoints'
-    # checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
+    checkpoint_dir = './data/training_checkpoints'
+    checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
 
     # if not os.path.exists('./data/generated/'):
     #     os.makedirs('./data/generated/')
@@ -71,13 +68,9 @@ def main(args):
             gen_loss, disc_loss = train_step(image_batch, generator, discriminator, generator_optimizer, discriminator_optimizer, cross_entropy, noise)
         print("Epochs {}: generator loss:{}, discriminator loss:{} in {} sec.".format(epoch, gen_loss, disc_loss, time.time()-start))  
 
-        # Produce images for the GIF as you go
-        # predictions = generator(seed, training=False)
-        # np.save('./data/generated/image_at_epoch_{:04d}.png'.format(epoch), predictions[0])
-
-        # Save the model every 15 epochs
-        # if (epoch + 1) % 15 == 0:
-        #     checkpoint.save(file_prefix = checkpoint_prefix)
+        Save the model every 15 epochs
+        if (epoch + 1) % 15 == 0:
+            checkpoint.save(file_prefix = checkpoint_prefix)
 
         # print('Time for epoch {} is {} sec'.format(epoch + 1, time.time()-start))
 
@@ -90,7 +83,6 @@ def main(args):
 
     tf.keras.models.save_model(generator, args.save_dir)
     # tf.keras.models.save_model(generator, gen_path, overwrite=True, include_optimizer=True, save_format=None, signatures=None, options=None, save_traces=True)
-
     # tf.keras.models.save_model(discriminator, args.save_dir[0] + "/discriminator", overwrite=True, include_optimizer=True, save_format=None, signatures=None, options=None, save_traces=True)
 
 if __name__ == "__main__":

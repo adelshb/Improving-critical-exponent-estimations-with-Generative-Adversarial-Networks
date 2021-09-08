@@ -15,7 +15,7 @@
 export HDF5_USE_FILE_LOCKING='FALSE'  # for exporting hd5 file
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/extras/CUPTI/lib64
 
-source env/bin/activate # activate your environment
+source .env/bin/activate # activate your environment
 
 python src/GAN/train.py \
 	--data_dir ./data/L_128/p_0.5928 \
