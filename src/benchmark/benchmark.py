@@ -58,9 +58,9 @@ def main(args):
 
     plt.hist(y_pred)
     plt.title("Distribution of the value of p for GAN generated critical configurations")
-    if not os.path.exists('saved_files'):
-        os.makedirs('saved_files')
-    plt.savefig('saved_files/hist_GANgenerated_configs.png')
+    if not os.path.exists(args.saving_path):
+        os.makedirs(args.saving_path)
+    plt.savefig(args.saving_path + "hist_GANgenerated_configs.png")
     
 if __name__ == "__main__":
     
@@ -68,6 +68,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--synthetic_data_dir", type=str, default="./data/generated/")
     parser.add_argument("--CNN_model_path", type=str, default="./saved_models/CNN_L128_N10000/saved-model.h5")
+    parser.add_argument("--saving_path", type=str, default= "./saved_files/")
     parser.add_argument("--noise_dim", type=int, default=100)
 
     args = parser.parse_args()
