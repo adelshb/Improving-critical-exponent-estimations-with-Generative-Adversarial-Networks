@@ -10,6 +10,8 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
+from argparse import ArgumentParser
+import tensorflow as tf
 import matplotlib.pyplot as plt
 import tensorflow as tf
 import json
@@ -18,8 +20,6 @@ import numpy as np
 import os
 
 from src.statphy.models.percolation import generate_data
-
-model = tf.keras.models.load_model("saved_models/CNN_L128_N10000/saved-model.h5")
 
 #X, _, _ = generate_data(L=128, 
 #                        p_arr=[0.5928],
@@ -43,17 +43,33 @@ def load_synthetic_config(synthetic_data_path='data/generated'):
     
     return synthetic_configs
 
-with open("saved_models/CNN_L128_N10000/labels.json", 'r') as f:
-    labels = json.load(f)
+def main(args):
 
-reversed_labels = {value : float(key) for (key, value) in labels.items()}
+    model = tf.keras.models.load_model(args.CNN_model_path)
 
-X = load_synthetic_config()
-y_pred = model.predict(X).argmax(axis=1)
-y_pred = [reversed_labels[i] for i in y_pred]
+    with open("saved_models/CNN_L128_N10000/labels.json", 'r') as f:
+        labels = json.load(f)
 
-plt.hist(y_pred)
-plt.title("Distribution of the value of p for GAN generated critical configurations")
-if not os.path.exists('saved_files'):
-    os.makedirs('saved_files')
-plt.savefig('saved_files/hist_GANgenerated_configs.png')
+    reversed_labels = {value : float(key) for (key, value) in labels.items()}
+
+    X = load_synthetic_config(args.synthetic_data_dir)
+    y_pred = model.predict(X).argmax(axis=1)
+    y_pred = [reversed_labels[i] for i in y_pred]
+
+    plt.hist(y_pred)
+    plt.title("Distribution of the value of p for GAN generated critical configurations")
+    if not os.path.exists('saved_files'):
+        os.makedirs('saved_files')
+    plt.savefig('saved_files/hist_GANgenerated_configs.png')
+    
+if __name__ == "__main__":
+    
+    parser = ArgumentParser()
+
+    parser.add_argument("--synthetic_data_dir", type=str, default="./data/generated/")
+    parser.add_argument("--CNN_model_path", type=str, default="./saved_models/CNN_L128_N10000/saved-model.h5")
+    parser.add_argument("--noise_dim", type=int, default=100)
+
+    args = parser.parse_args()
+    main(args)
+
