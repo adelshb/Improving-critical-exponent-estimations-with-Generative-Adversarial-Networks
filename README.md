@@ -73,6 +73,8 @@ Make sure that configurations have been created first (at "/data/L_128/p_0.5928"
 
 ### Generate configurations with GAN
 
+[GAN](https://drive.google.com/file/d/1kfpgoXJTj8s2v96tVL6XtkmiBmWDpG61/view?usp=sharing)
+
 ```shell
     python src/GAN/generate.py \
         --num 10 \
