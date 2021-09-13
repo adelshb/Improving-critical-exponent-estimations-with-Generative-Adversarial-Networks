@@ -75,6 +75,7 @@ Make sure that configurations have been created first (at "/data/L_128/p_0.5928"
 
 Here is the link to a trained generator:
 [GAN](https://drive.google.com/file/d/1kfpgoXJTj8s2v96tVL6XtkmiBmWDpG61/view?usp=sharing)
+[metadata](https://drive.google.com/file/d/1qIOxPaLd-ORYZdoDV5iOw6wvp3AIoeg-/view?usp=sharing)
 
 ```shell
     python src/GAN/generate.py \
