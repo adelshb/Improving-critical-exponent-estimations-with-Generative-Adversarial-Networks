@@ -20,7 +20,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # for ignoring the some of tf warnings
 
 def main(args):
 
-    generator = tf.keras.models.load_model(args.model_dir)
+    generator = tf.keras.models.load_model(args.model_dir, compile=False)
 
     if not os.path.exists(args.data_dir):
         os.makedirs(args.data_dir)
