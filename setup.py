@@ -1,15 +1,10 @@
 from setuptools import setup, find_packages
 
+with open('./requirements.txt', 'r') as f:
+   packages = f.read().replace('\n', '')
+
 setup(
    name='Improving critical exponent estimations with Generative Adversarial Networks',
    packages=find_packages(), 
-   install_requires=['tensorflow',
-                     'numpy',
-                     'matplotlib',
-                     'seaborn',
-                     'sklearn',
-                     'scipy==1.5.4',
-                     'tqdm',
-                     'jupyter',
-                     'pandas',
-                    ])
+   install_requires=packages
+   )

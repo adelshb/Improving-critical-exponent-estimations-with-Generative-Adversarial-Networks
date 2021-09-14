@@ -11,3 +11,5 @@ saved_files/
 *.gif
 job.sh
 *.egg-info/
+build/
+dist/

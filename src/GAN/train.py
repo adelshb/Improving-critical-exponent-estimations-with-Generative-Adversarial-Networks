@@ -60,8 +60,8 @@ def main(args):
             gen_loss, disc_loss = train_step(image_batch, generator, discriminator, generator_optimizer, discriminator_optimizer, cross_entropy, noise)
         print("Epochs {}: generator loss:{}, discriminator loss:{} in {} sec.".format(epoch, gen_loss, disc_loss, time.time()-start))  
 
-        #Save the model every 15 epochs
-        if (epoch + 1) % 15 == 0:
+        #Save the model every 50 epochs
+        if (epoch + 1) % 50 == 0:
             checkpoint.save(file_prefix = checkpoint_prefix)
 
     if not os.path.exists(args.save_dir):
