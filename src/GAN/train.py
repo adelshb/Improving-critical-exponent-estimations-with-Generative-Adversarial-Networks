@@ -56,9 +56,17 @@ def main(args):
 
     for epoch in range(args.epochs):
         start = time.time()
+        if epoch %5 == 0:
+            freeze = False
+        else:
+            freeze = False
         for image_batch in train_dataset:
-            gen_loss, disc_loss = train_step(image_batch, generator, discriminator, generator_optimizer, discriminator_optimizer, cross_entropy, noise)
-        print("Epochs {}: generator loss:{}, discriminator loss:{} in {} sec.".format(epoch, gen_loss, disc_loss, time.time()-start))  
+            gen_loss, disc_loss = train_step(image_batch, generator, discriminator, generator_optimizer, discriminator_optimizer, cross_entropy, noise, freeze)
+        try:
+            print("Epochs {}: generator loss:{}, discriminator loss:{} in {} sec.".format(epoch, gen_loss, disc_loss, time.time()-start)) 
+        except: 
+            print("Epochs {}: generator loss:{} in {} sec.".format(epoch, gen_loss, time.time()-start)) 
+
 
         #Save the model every 50 epochs
         if (epoch + 1) % 50 == 0:

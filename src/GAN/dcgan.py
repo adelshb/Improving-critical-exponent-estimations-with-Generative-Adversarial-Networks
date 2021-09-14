@@ -24,7 +24,12 @@ def make_generator_model():
     model.add(layers.Reshape((2, 2, 256)))
     assert model.output_shape == (None, 2, 2, 256)  # Note: None is the batch size
 
-    model.add(layers.Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same', use_bias=False))
+    model.add(layers.Conv2DTranspose(128, (3, 3), strides=(2, 2), padding='same', use_bias=False))
+    assert model.output_shape == (None, 4, 4, 128)
+    model.add(layers.BatchNormalization())
+    model.add(layers.LeakyReLU())
+    
+    model.add(layers.Conv2DTranspose(128, (3, 3), strides=(1, 1), padding='same', use_bias=False))
     assert model.output_shape == (None, 4, 4, 128)
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
@@ -34,7 +39,17 @@ def make_generator_model():
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
     
+    model.add(layers.Conv2DTranspose(64, (3, 3), strides=(1, 1), padding='same', use_bias=False))
+    assert model.output_shape == (None, 8, 8, 64)
+    model.add(layers.BatchNormalization())
+    model.add(layers.LeakyReLU())
+    
     model.add(layers.Conv2DTranspose(32, (3, 3), strides=(2, 2), padding='same', use_bias=False))
+    assert model.output_shape == (None, 16, 16, 32)
+    model.add(layers.BatchNormalization())
+    model.add(layers.LeakyReLU())
+    
+    model.add(layers.Conv2DTranspose(32, (3, 3), strides=(1, 1), padding='same', use_bias=False))
     assert model.output_shape == (None, 16, 16, 32)
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
@@ -44,13 +59,28 @@ def make_generator_model():
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
     
+    model.add(layers.Conv2DTranspose(16, (3, 3), strides=(1, 1), padding='same', use_bias=False))
+    assert model.output_shape == (None, 32, 32, 16)
+    model.add(layers.BatchNormalization())
+    model.add(layers.LeakyReLU())
+    
     model.add(layers.Conv2DTranspose(8, (3, 3), strides=(2, 2), padding='same', use_bias=False))
     assert model.output_shape == (None, 64, 64, 8)
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
     
+    model.add(layers.Conv2DTranspose(8, (3, 3), strides=(1, 1), padding='same', use_bias=False))
+    assert model.output_shape == (None, 64, 64, 8)
+    model.add(layers.BatchNormalization())
+    model.add(layers.LeakyReLU())
+    
     model.add(layers.Conv2DTranspose(1, (3, 3), strides=(2, 2), padding='same', use_bias=False))
-    model.add(layers.Lambda(lambda x: tf.sign))
+    
+    def sign_fct(x):
+        import tensorflow as tf
+        return tf.sign(x)
+    
+    model.add(layers.Lambda(lambda x: sign_fct(x)))
     assert model.output_shape == (None, 128, 128, 1)
 
     return model

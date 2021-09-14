@@ -58,21 +58,22 @@ def visualize_image(im):
 
 def main(args):
 
-    model = tf.keras.models.load_model(args.CNN_model_path)
+    model = tf.keras.models.load_model(args.CNN_model_path, custom_objects={'tf': tf})
 
     with open("saved_models/CNN_L128_N10000/labels.json", 'r') as f:
         labels = json.load(f)
 
     reversed_labels = {value : float(key) for (key, value) in labels.items()}
 
-    X = load_synthetic_config(args.synthetic_data_dir, num=500)
+    X = load_synthetic_config(args.synthetic_data_dir, num=100)
     #X = load_real_data(max_configs_per_p=500)
-    X = np.where(X > 0, 1, -1)
+    #X = np.where(X > 0, 1, -1)
     y_pred = model.predict(X).argmax(axis=1)
     y_pred = [reversed_labels[i] for i in y_pred]
     
     
     #print(X[0])
+    
     #visualize_image(X[0])
     #exit()
 
