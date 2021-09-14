@@ -63,12 +63,12 @@ It possible to train a CNN with the following command:
 Make sure that configurations have been created first (at "/data/L_128/p_0.5928" in the following example).
 
 ```shell
-    python src/GAN/train.py \
-        --data_dir /data/L_128/p_0.5928 \
-        --batch_size 32 \
-        --epochs 200 \
-        --noise_dim 100 \
-        --save_dir /data/models/gan
+python src/GAN/train.py \
+    --data_dir ./data/L_128/p_0.5928 \
+    --batch_size 32 \
+    --epochs 200 \
+    --noise_dim 100 \
+    --save_dir /data/models/gan
 ``` 
 
 ### Generate configurations with GAN

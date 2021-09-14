@@ -15,8 +15,11 @@
 from argparse import ArgumentParser
 import glob
 import time
+import IPython
 import numpy as np
-import os 
+import os
+
+from tensorflow._api.v2 import data 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # for ignoring the some of tf warnings
 
 #from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
@@ -27,19 +30,11 @@ from utils import *
 
 def main(args):
 
-    #train_images = []
-    #for filename in glob.glob(os.getcwd() + '/' + args.data_dir + "*.npy"):
-    #    with open(os.path.join(os.getcwd(), filename), 'rb') as f: 
-    #        train_images.append(np.load(f))
-    #
-    #train_images = np.array(train_images).reshape(len(train_images),128,128,1).astype("float32")
-    #train_dataset = tf.data.Dataset.from_tensor_slices(train_images).batch(args.batch_size)
+
     filenames = glob.glob(args.data_dir + "/*.npy")
     train_images = np.array([np.load(fname) for fname in filenames]).reshape(len(filenames),128,128,1).astype(np.float32)
-    train_dataset = tf.data.Dataset.from_tensor_slices(train_images).batch(args.batch_size)
-    #train_dataset = train_dataset.map(lambda item: tuple(tf.py_func(read_npy_file, [item], [tf.float32,])))
 
-    #from IPython import embed; embed()
+    train_dataset = tf.data.Dataset.from_tensor_slices(train_images).batch(args.batch_size)
 
     generator = make_generator_model()
     discriminator = make_discriminator_model()
@@ -59,9 +54,6 @@ def main(args):
     checkpoint_dir = './data/training_checkpoints'
     checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
 
-    # if not os.path.exists('./data/generated/'):
-    #     os.makedirs('./data/generated/')
-    
     for epoch in range(args.epochs):
         start = time.time()
         for image_batch in train_dataset:
@@ -72,18 +64,10 @@ def main(args):
         if (epoch + 1) % 15 == 0:
             checkpoint.save(file_prefix = checkpoint_prefix)
 
-        # print('Time for epoch {} is {} sec'.format(epoch + 1, time.time()-start))
-
-    # Generate after the final epoch
-    # predictions = generator(seed, training=False)
-    # np.save('./data/generated/image_at_epoch_{:04d}.png'.format(epoch), predictions[0])
-
     if not os.path.exists(args.save_dir):
         os.makedirs(args.save_dir)
 
     tf.keras.models.save_model(generator, args.save_dir)
-    # tf.keras.models.save_model(generator, gen_path, overwrite=True, include_optimizer=True, save_format=None, signatures=None, options=None, save_traces=True)
-    # tf.keras.models.save_model(discriminator, args.save_dir[0] + "/discriminator", overwrite=True, include_optimizer=True, save_format=None, signatures=None, options=None, save_traces=True)
 
 if __name__ == "__main__":
     parser = ArgumentParser()
