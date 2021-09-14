@@ -43,6 +43,10 @@ def train_step(images, generator, discriminator, generator_optimizer, discrimina
 
     return gen_loss, disc_loss
 
+def read_npy_file(item):
+    data = np.load(item)
+    return data.reshape(128,128,1).astype(np.float32)
+
 def generate_and_save_images(model, epoch, test_input):
   predictions = model(test_input, training=False)
 

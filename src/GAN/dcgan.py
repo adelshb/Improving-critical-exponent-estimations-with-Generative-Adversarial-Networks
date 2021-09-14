@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 #
+# Written by Matthieu Sarkis, https://github.com/MatthieuSarkis
+#
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
 # of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
@@ -7,6 +9,7 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+
 
 import tensorflow as tf
 from tensorflow.keras import layers
@@ -46,7 +49,8 @@ def make_generator_model():
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
     
-    model.add(layers.Conv2DTranspose(1, (3, 3), strides=(2, 2), padding='same', use_bias=False, activation='tanh'))
+    model.add(layers.Conv2DTranspose(1, (3, 3), strides=(2, 2), padding='same', use_bias=False))
+    model.add(layers.Lambda(lambda x: tf.sign))
     assert model.output_shape == (None, 128, 128, 1)
 
     return model
