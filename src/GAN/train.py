@@ -13,27 +13,20 @@
 """Train the GAN model."""
 
 from argparse import ArgumentParser
-import glob
 import time
-import IPython
 import numpy as np
 import os
 
-from tensorflow._api.v2 import data 
+import tensorflow as tf
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # for ignoring the some of tf warnings
-
-#from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
-import tensorflow as tf 
 
 from dcgan import make_generator_model, make_discriminator_model
 from utils import *
 
 def main(args):
 
-
-    filenames = glob.glob(args.data_dir + "/*.npy")
-    train_images = np.array([np.load(fname) for fname in filenames]).reshape(len(filenames),128,128,1).astype(np.float32)
-
+    with np.load(args.data_path) as data:
+        train_images = data['arr_0']
     train_dataset = tf.data.Dataset.from_tensor_slices(train_images).batch(args.batch_size)
 
     generator = make_generator_model()
@@ -51,22 +44,27 @@ def main(args):
 
     noise = tf.random.normal([args.batch_size, args.noise_dim])
 
-    checkpoint_dir = './data/training_checkpoints'
+    checkpoint_dir = args.save_dir + '/training_checkpoints'
     checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
 
     for epoch in range(args.epochs):
-        start = time.time()
-        if epoch %5 == 0:
-            freeze = False
-        else:
-            freeze = False
-        for image_batch in train_dataset:
-            gen_loss, disc_loss = train_step(image_batch, generator, discriminator, generator_optimizer, discriminator_optimizer, cross_entropy, noise, freeze)
-        try:
-            print("Epochs {}: generator loss:{}, discriminator loss:{} in {} sec.".format(epoch, gen_loss, disc_loss, time.time()-start)) 
-        except: 
-            print("Epochs {}: generator loss:{} in {} sec.".format(epoch, gen_loss, time.time()-start)) 
 
+        # Input Gaussian noise schedule
+        stddev = 0.5/(epoch+1)
+
+        start = time.time()
+        for image_batch in train_dataset:
+
+            gen_loss, disc_loss = train_step(images= image_batch, 
+                                                generator= generator, 
+                                                discriminator= discriminator, 
+                                                generator_optimizer= generator_optimizer, 
+                                                discriminator_optimizer= discriminator_optimizer, 
+                                                cross_entropy= cross_entropy, 
+                                                noise= noise, 
+                                                stddev= stddev)
+
+        print("Epochs {}: generator loss:{}, discriminator loss:{} in {} sec.".format(epoch, gen_loss, disc_loss, time.time()-start))
 
         #Save the model every 50 epochs
         if (epoch + 1) % 50 == 0:
@@ -81,7 +79,7 @@ if __name__ == "__main__":
     parser = ArgumentParser()
 
     # Data
-    parser.add_argument("--data_dir", type=str, default="./data/L_128/p_0.5928")
+    parser.add_argument("--data_path", type=str, default="./data/simulation/L=128_p=0.5928.npz")
 
     # Training parameters
     parser.add_argument("--batch_size", type=int, default=50)

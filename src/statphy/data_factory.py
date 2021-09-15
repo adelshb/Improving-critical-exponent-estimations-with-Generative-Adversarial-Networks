@@ -17,21 +17,13 @@ import itertools
 
 from src.statphy.models.percolation import percolation_configuration
 
-# Example
-# python statphy/data_factory.py \
-#     --model square_lattice_percolation \
-#     --L 64 128 \
-#     --control_parameter 0.5 0.6 \
-#     --samples 100
-
 _available_models = [
     "square_lattice_percolation",
     ]
 
 def main(args):
 
-    PATH = os.path.join(args.path, "data")
-    os.makedirs(PATH, exist_ok=True)
+    os.makedirs(args.path, exist_ok=True)
 
     if args.model == "square_lattice_percolation":
 
@@ -39,13 +31,9 @@ def main(args):
 
             print ('Generating data for L={}, p={}'.format(L, p))
 
-            finalpath = os.path.join(PATH, 'L_{}'.format(L), 'p_{}'.format(p))
-            os.makedirs(finalpath, exist_ok=True)
-
-            for i in range(args.samples):
-                x = percolation_configuration(L, p)
-                filepath = os.path.join(finalpath, '{}'.format(i))
-                np.save(filepath, x)
+            X = np.array([percolation_configuration(L, p) for __ in range(args.samples)],dtype='float32').reshape(args.samples,L,L,1)
+            path = args.path + "/L={}_p={}.npz".format(L, p)
+            np.savez(path, X)
 
 
 if __name__ == "__main__":
@@ -63,7 +51,7 @@ if __name__ == "__main__":
     parser.add_argument("--samples", type=int, default=10)
 
     # Save data
-    parser.add_argument("--path", type=str, default=os.getcwd())
+    parser.add_argument("--path", type=str, default="./data/simulation")
 
     args = parser.parse_args()
     main(args)

@@ -35,11 +35,11 @@ if __name__ == "__main__":
     parser = ArgumentParser()
 
     # Data
-    parser.add_argument("--num", type=int, default=10)
-    parser.add_argument("--data_dir", type=str, default="./data/generated/")
+    parser.add_argument("--num", type=int, default=100)
+    parser.add_argument("--data_dir", type=str, default="./data/generated")
 
     # Model
-    parser.add_argument("--model_dir", type=str, default="./data/models/gan/")
+    parser.add_argument("--model_dir", type=str, default="./data/models/gan")
     parser.add_argument("--noise_dim", type=int, default=100)
 
     args = parser.parse_args()
