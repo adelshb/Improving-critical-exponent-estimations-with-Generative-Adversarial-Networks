@@ -12,7 +12,7 @@
 
 import numpy as np
 
-from typing import Optional
+from typing import Dict, Optional
 
 import tensorflow as tf
 from tensorflow import Tensor
@@ -25,20 +25,22 @@ import matplotlib.pyplot as plt
 def generator_loss(cross_entropy: Loss, fake_output: Tensor):
     return cross_entropy(tf.ones_like(fake_output), fake_output)
 
-def discriminator_loss(cross_entropy: Loss, real_output: Tensor, fake_output: Tensor):
-    real_loss = cross_entropy(tf.ones_like(real_output), real_output)
-    fake_loss = cross_entropy(tf.zeros_like(fake_output), fake_output)
+def discriminator_loss(cross_entropy: Loss, real_output: Tensor, fake_output: Tensor, 
+                       label_smoothing: Dict = {'fake': 0.0, 'real': 0.0}):
+    real_loss = cross_entropy(tf.ones_like(real_output) - label_smoothing['real'], real_output)
+    fake_loss = cross_entropy(tf.zeros_like(fake_output) + label_smoothing['fake'], fake_output)
     total_loss = real_loss + fake_loss
     return total_loss
 
 def train_step(images: Tensor, 
-                generator: Sequential, 
-                discriminator: Sequential, 
-                generator_optimizer: Optimizer, 
-                discriminator_optimizer: Optimizer, 
-                cross_entropy: Loss, 
-                noise: Tensor, 
-                stddev: Optional[float] = 0.5):
+               generator: Sequential, 
+               discriminator: Sequential, 
+               generator_optimizer: Optimizer, 
+               discriminator_optimizer: Optimizer, 
+               cross_entropy: Loss, 
+               noise: Tensor, 
+               stddev: Optional[float] = 0.5,
+               label_smoothing: Dict = {'fake': 0.0, 'real': 0.0}):
 
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
         generated_images = generator(noise, training=True)
@@ -53,7 +55,7 @@ def train_step(images: Tensor,
 
         # Computing loss
         gen_loss = generator_loss(cross_entropy, fake_output)
-        disc_loss = discriminator_loss(cross_entropy, real_output, fake_output)
+        disc_loss = discriminator_loss(cross_entropy, real_output, fake_output, label_smoothing)
 
     # Updates
     gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
