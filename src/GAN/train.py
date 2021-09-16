@@ -49,9 +49,6 @@ def main(args):
 
     for epoch in range(args.epochs):
 
-        # Input Gaussian noise schedule
-        stddev = 0.5/(epoch+1)
-
         start = time.time()
         for image_batch in train_dataset:
 
@@ -62,8 +59,8 @@ def main(args):
                                                 discriminator_optimizer= discriminator_optimizer, 
                                                 cross_entropy= cross_entropy, 
                                                 noise= noise, 
-                                                stddev= stddev,
-                                                label_smoothing={'fake': 0.1, 'real': 0.1})
+                                                stddev= 0.5,
+                                                label_smoothing={'fake': 0.0, 'real': 0.1})
 
         print("Epochs {}: generator loss:{}, discriminator loss:{} in {} sec.".format(epoch, gen_loss, disc_loss, time.time()-start))
 
