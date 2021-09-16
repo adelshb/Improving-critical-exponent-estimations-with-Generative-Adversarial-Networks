@@ -62,7 +62,8 @@ def main(args):
                                                 discriminator_optimizer= discriminator_optimizer, 
                                                 cross_entropy= cross_entropy, 
                                                 noise= noise, 
-                                                stddev= stddev)
+                                                stddev= stddev,
+                                                label_smoothing={'fake': 0.1, 'real': 0.1})
 
         print("Epochs {}: generator loss:{}, discriminator loss:{} in {} sec.".format(epoch, gen_loss, disc_loss, time.time()-start))
 
