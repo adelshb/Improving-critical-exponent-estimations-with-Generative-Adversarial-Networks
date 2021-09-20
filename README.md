@@ -74,7 +74,7 @@ Here is the link to a trained generator:
 ```shell
 python src/GAN/generate.py \
     --num 10 \
-    --data_dir ./data/generated/
+    --data_dir ./data/generated/ \
     --model_dir ./data/models/gan/ \
     --noise_dim 100
 ```
