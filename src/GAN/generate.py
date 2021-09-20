@@ -18,9 +18,23 @@ import numpy as np
 import os 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # for ignoring the some of tf warnings
 
+from dcgan import make_generator_model, make_discriminator_model
+
 def main(args):
 
     generator = tf.keras.models.load_model(args.model_dir, compile=False)
+    
+    #generator = make_generator_model()
+    #discriminator = make_discriminator_model()
+    #generator_optimizer = tf.keras.optimizers.Adam(1e-4)
+    #discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
+    
+    #checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
+    #                                 discriminator_optimizer=discriminator_optimizer,
+    #                                 generator=generator,
+    #                                 discriminator=discriminator)
+    
+    #generator.load_weights('./data/models/gan-100k-2/training_checkpoints/ckpt-10')
 
     if not os.path.exists(args.data_dir):
         os.makedirs(args.data_dir)

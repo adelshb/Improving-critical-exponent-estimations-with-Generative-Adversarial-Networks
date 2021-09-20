@@ -65,17 +65,20 @@ def main(args):
 
     reversed_labels = {value : float(key) for (key, value) in labels.items()}
 
-    X = load_synthetic_config(args.synthetic_data_dir, num=100)
+    X = load_synthetic_config(args.synthetic_data_dir)
     #X = load_real_data(max_configs_per_p=500)
     #X = np.where(X > 0, 1, -1)
+    
+    #visualize_image(X[0])
+    #exit()
+    
     y_pred = model.predict(X).argmax(axis=1)
     y_pred = [reversed_labels[i] for i in y_pred]
     
     
     #print(X[0])
     
-    #visualize_image(X[0])
-    #exit()
+    
 
     plt.hist(y_pred)
     plt.title("Distribution of the value of p for GAN generated critical configurations")
