@@ -84,12 +84,12 @@ def make_generator_model():
 
     return model
 
-def make_cnn_model(input_shape=128*128, 
-                             K=41, 
-                             n_conv_layers=4, 
-                             n_dense_layers=3, 
-                             n_neurons=512, 
-                             dropout_rate=0):
+def make_cnn_model(input_shape=(128, 128, 1), 
+                   K=41, 
+                   n_conv_layers=4, 
+                   n_dense_layers=3, 
+                   n_neurons=512, 
+                   dropout_rate=0):
 
     # input layer
     i = tf.keras.layers.Input(shape=input_shape)

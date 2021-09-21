@@ -26,31 +26,24 @@ def generator_loss(cross_entropy: Loss,
                    generated_images: Tensor,
                    cnn: Sequential):
     
-    predicted_probabilities = cnn(generated_images)
-    wanted_output = np.full(predicted_probabilities.shape, 24, dtype=int)
+    predicted_probabilities = cnn(generated_images) 
+    wanted_output = np.full(predicted_probabilities.shape[0], 24, dtype=int)
     
     return cross_entropy(wanted_output, predicted_probabilities)
 
-def train_step(images: Tensor, 
-               generator: Sequential, 
+def train_step(generator: Sequential, 
                cnn: Sequential, 
                generator_optimizer: Optimizer, 
                cross_entropy: Loss, 
                noise: Tensor, 
                stddev: Optional[float] = 0.5,
-               #label_smoothing: Dict = {'fake': 0.0, 'real': 0.0}
                ):
 
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
+        
         generated_images = generator(noise, training=True)
-
-        # Adding Gaussian noise to all images 
-        #images = images + tf.random.normal(shape=images.shape, stddev=stddev)
-        #generated_images = generated_images + tf.random.normal(shape=generated_images.shape, stddev=stddev)
-
         gen_loss = generator_loss(cross_entropy, generated_images, cnn)
 
-    # Updates
     gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
     generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
 

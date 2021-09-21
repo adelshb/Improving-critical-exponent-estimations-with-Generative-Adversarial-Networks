@@ -33,12 +33,9 @@ def main(args):
     cnn = make_cnn_model()
 
     cross_entropy = tf.keras.losses.SparseCategoricalCrossentropy()
-
     generator_optimizer = tf.keras.optimizers.Adam(1e-3)
 
-    checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
-                                     generator=generator)
-
+    checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer, generator=generator)
     checkpoint_dir = args.save_dir + '/training_checkpoints'
     checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
 
@@ -49,18 +46,16 @@ def main(args):
 
             noise = tf.random.normal([args.batch_size, args.noise_dim])
 
-            gen_loss = train_step(images= image_batch, 
-                                             generator= generator, 
-                                             cnn=cnn, 
-                                             generator_optimizer= generator_optimizer,  
-                                             cross_entropy= cross_entropy, 
-                                             noise= noise, 
-                                             stddev= 0.5
-                                             )
+            gen_loss = train_step(generator= generator, 
+                                  cnn=cnn, 
+                                  generator_optimizer= generator_optimizer,  
+                                  cross_entropy= cross_entropy, 
+                                  noise= noise, 
+                                  stddev= 0.5,
+                                  )
 
-        print("Epochs {}: generator loss:{}, discriminator loss:{} in {} sec.".format(epoch, gen_loss, time.time()-start))
+        print("Epochs {}: generator loss:{}, in {} sec.".format(epoch, gen_loss, time.time()-start))
 
-        #Save the model every 50 epochs
         if (epoch + 1) % 50 == 0:
             checkpoint.save(file_prefix = checkpoint_prefix)
 
