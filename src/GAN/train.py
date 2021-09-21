@@ -25,10 +25,6 @@ from utils import *
 
 def main(args):
 
-    with np.load(args.data_path) as data:
-        train_images = data['arr_0']
-    train_dataset = tf.data.Dataset.from_tensor_slices(train_images).batch(args.batch_size)
-
     generator = make_generator_model()
     cnn = make_cnn_model()
 
@@ -42,17 +38,16 @@ def main(args):
     for epoch in range(args.epochs):
 
         start = time.time()
-        for image_batch in train_dataset:
 
-            noise = tf.random.normal([args.batch_size, args.noise_dim])
+        noise = tf.random.normal([args.batch_size, args.noise_dim])
 
-            gen_loss = train_step(generator= generator, 
-                                  cnn=cnn, 
-                                  generator_optimizer= generator_optimizer,  
-                                  cross_entropy= cross_entropy, 
-                                  noise= noise, 
-                                  stddev= 0.5,
-                                  )
+        gen_loss = train_step(generator= generator, 
+                              cnn=cnn, 
+                              generator_optimizer= generator_optimizer,  
+                              cross_entropy= cross_entropy, 
+                              noise= noise, 
+                              stddev= 0.5,
+                              )
 
         print("Epochs {}: generator loss:{}, in {} sec.".format(epoch, gen_loss, time.time()-start))
 
