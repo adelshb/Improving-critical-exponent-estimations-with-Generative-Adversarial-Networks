@@ -13,7 +13,6 @@
 import tensorflow as tf
 from tensorflow.keras import layers
 
-
 def make_generator_model():
     
     model = tf.keras.Sequential()
@@ -85,39 +84,39 @@ def make_generator_model():
 
     return model
 
-def make_discriminator_model(dropout_rate=0.0):
-    
-    model = tf.keras.Sequential()
-    
-    model.add(layers.Conv2D(32, (3, 3), padding='same', input_shape=(128, 128, 1)))
-    model.add(layers.LeakyReLU())
-    model.add(layers.Conv2D(32, (3, 3), padding='same'))
-    model.add(layers.LeakyReLU())
-    model.add(layers.MaxPooling2D((2,2)))
-    
-    model.add(layers.Conv2D(64, (3, 3), padding='same'))
-    model.add(layers.LeakyReLU())
-    model.add(layers.Conv2D(64, (3, 3), padding='same'))
-    model.add(layers.LeakyReLU())
-    model.add(layers.MaxPooling2D((2,2)))
-    
-    model.add(layers.Conv2D(128, (3, 3), padding='same'))
-    model.add(layers.LeakyReLU())
-    model.add(layers.Conv2D(128, (3, 3), padding='same'))
-    model.add(layers.LeakyReLU())
-    model.add(layers.MaxPooling2D((2,2)))
-    
-    model.add(layers.Conv2D(256, (3, 3), padding='same'))
-    model.add(layers.LeakyReLU())
-    model.add(layers.Conv2D(256, (3, 3), padding='same'))
-    model.add(layers.LeakyReLU())
-    model.add(layers.MaxPooling2D((2,2)))
-    
+def make_cnn_model(input_shape=128*128, 
+                             K=41, 
+                             n_conv_layers=4, 
+                             n_dense_layers=3, 
+                             n_neurons=512, 
+                             dropout_rate=0):
+
+    # input layer
+    i = tf.keras.layers.Input(shape=input_shape)
+    x = i
+
+    # Convolution block
+    for l in range(n_conv_layers):
+        n_filters = 32 * (2 ** l)
+        x = tf.keras.layers.Conv2D(n_filters, (3,3), activation='relu', padding='same')(x)
+        x = tf.keras.layers.BatchNormalization()(x)
+        x = tf.keras.layers.Conv2D(n_filters, (3,3), activation='relu', padding='same')(x)
+        x = tf.keras.layers.BatchNormalization()(x)
+        x = tf.keras.layers.MaxPooling2D((2,2))(x)
+
+
+    x = tf.keras.layers.Flatten()(x)
+
     if dropout_rate > 0:
-        model.add(layers.Dropout(0.3))
+        x = tf.keras.layers.Dropout(dropout_rate)(x)
 
-    model.add(layers.Flatten())
-    model.add(layers.Dense(1))
-
+    # Classification block
+    for l in range(n_dense_layers):
+        x = tf.keras.layers.Dense(n_neurons, activation='relu')(x)
+        if dropout_rate > 0:
+            x = tf.keras.layers.Dropout(dropout_rate)(x)
+            
+    x = tf.keras.layers.Dense(K, activation='softmax')(x)
+    model = tf.keras.models.Model(i, x)
     return model
 

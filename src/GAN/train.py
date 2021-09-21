@@ -20,7 +20,7 @@ import os
 import tensorflow as tf
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # for ignoring the some of tf warnings
 
-from dcgan import make_generator_model, make_discriminator_model
+from dcgan import make_generator_model, make_cnn_model
 from utils import *
 
 def main(args):
@@ -30,17 +30,14 @@ def main(args):
     train_dataset = tf.data.Dataset.from_tensor_slices(train_images).batch(args.batch_size)
 
     generator = make_generator_model()
-    discriminator = make_discriminator_model()
+    cnn = make_cnn_model()
 
-    cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+    cross_entropy = tf.keras.losses.SparseCategoricalCrossentropy()
 
-    generator_optimizer = tf.keras.optimizers.Adam(1e-4)
-    discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
+    generator_optimizer = tf.keras.optimizers.Adam(1e-3)
 
     checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
-                                     discriminator_optimizer=discriminator_optimizer,
-                                     generator=generator,
-                                     discriminator=discriminator)
+                                     generator=generator)
 
     checkpoint_dir = args.save_dir + '/training_checkpoints'
     checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
@@ -52,17 +49,16 @@ def main(args):
 
             noise = tf.random.normal([args.batch_size, args.noise_dim])
 
-            gen_loss, disc_loss = train_step(images= image_batch, 
+            gen_loss = train_step(images= image_batch, 
                                              generator= generator, 
-                                             discriminator= discriminator, 
-                                             generator_optimizer= generator_optimizer, 
-                                             discriminator_optimizer= discriminator_optimizer, 
+                                             cnn=cnn, 
+                                             generator_optimizer= generator_optimizer,  
                                              cross_entropy= cross_entropy, 
                                              noise= noise, 
-                                             stddev= 0.5,
-                                             label_smoothing={'fake': 0.0, 'real': 0.1})
+                                             stddev= 0.5
+                                             )
 
-        print("Epochs {}: generator loss:{}, discriminator loss:{} in {} sec.".format(epoch, gen_loss, disc_loss, time.time()-start))
+        print("Epochs {}: generator loss:{}, discriminator loss:{} in {} sec.".format(epoch, gen_loss, time.time()-start))
 
         #Save the model every 50 epochs
         if (epoch + 1) % 50 == 0:

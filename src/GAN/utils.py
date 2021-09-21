@@ -22,49 +22,39 @@ from tensorflow.keras.optimizers import Optimizer
 
 import matplotlib.pyplot as plt
 
-def generator_loss(cross_entropy: Loss, fake_output: Tensor):
-    return cross_entropy(tf.ones_like(fake_output), fake_output)
-
-def discriminator_loss(cross_entropy: Loss, real_output: Tensor, fake_output: Tensor, 
-                       label_smoothing: Dict = {'fake': 0.0, 'real': 0.0}):
-    real_loss = cross_entropy(tf.ones_like(real_output) - label_smoothing['real'], real_output)
-    fake_loss = cross_entropy(tf.zeros_like(fake_output) + label_smoothing['fake'], fake_output)
-    total_loss = real_loss + fake_loss
-    return total_loss
+def generator_loss(cross_entropy: Loss, 
+                   generated_images: Tensor,
+                   cnn: Sequential):
+    
+    predicted_probabilities = cnn(generated_images)
+    wanted_output = np.full(predicted_probabilities.shape, 24, dtype=int)
+    
+    return cross_entropy(wanted_output, predicted_probabilities)
 
 def train_step(images: Tensor, 
                generator: Sequential, 
-               discriminator: Sequential, 
+               cnn: Sequential, 
                generator_optimizer: Optimizer, 
-               discriminator_optimizer: Optimizer, 
                cross_entropy: Loss, 
                noise: Tensor, 
                stddev: Optional[float] = 0.5,
-               label_smoothing: Dict = {'fake': 0.0, 'real': 0.0}):
+               #label_smoothing: Dict = {'fake': 0.0, 'real': 0.0}
+               ):
 
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
         generated_images = generator(noise, training=True)
 
         # Adding Gaussian noise to all images 
-        images = images + tf.random.normal(shape=images.shape, stddev=stddev)
-        generated_images = generated_images + tf.random.normal(shape=generated_images.shape, stddev=stddev)
+        #images = images + tf.random.normal(shape=images.shape, stddev=stddev)
+        #generated_images = generated_images + tf.random.normal(shape=generated_images.shape, stddev=stddev)
 
-        # Discriminator predictions
-        real_output = discriminator(images, training=True)
-        fake_output = discriminator(generated_images, training=True)
-
-        # Computing loss
-        gen_loss = generator_loss(cross_entropy, fake_output)
-        disc_loss = discriminator_loss(cross_entropy, real_output, fake_output, label_smoothing)
+        gen_loss = generator_loss(cross_entropy, generated_images, cnn)
 
     # Updates
     gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
     generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
 
-    gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
-    discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
-
-    return gen_loss, disc_loss
+    return gen_loss
 
 def read_npy_file(item):
     data = np.load(item)
