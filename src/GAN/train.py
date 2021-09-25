@@ -59,13 +59,13 @@ def main(args):
                                              discriminator_optimizer= discriminator_optimizer, 
                                              cross_entropy= cross_entropy, 
                                              noise= noise, 
-                                             stddev= 0.5,
-                                             label_smoothing={'fake': 0.0, 'real': 0.1})
+                                             stddev= args.input_noise_stddev,
+                                             label_smoothing={'fake': args.label_smoothing_fake, 'real': args.label_smoothing_real})
 
         print("Epochs {}: generator loss:{}, discriminator loss:{} in {} sec.".format(epoch, gen_loss, disc_loss, time.time()-start))
 
         #Save the model every 50 epochs
-        if (epoch + 1) % 50 == 0:
+        if (epoch + 1) % args.save_ckpt == 0:
             checkpoint.save(file_prefix = checkpoint_prefix)
 
     if not os.path.exists(args.save_dir):
@@ -83,8 +83,13 @@ if __name__ == "__main__":
     parser.add_argument("--batch_size", type=int, default=50)
     parser.add_argument("--epochs", type=int, default=200)
     parser.add_argument("--noise_dim", type=int, default=100)
+    parser.add_argument("--input_noise_stddev", type=float, default=0.1)
+    parser.add_argument("--label_smoothing_real", type=float, default=0.05)
+    parser.add_argument("--label_smoothing_fake", type=float, default=0)
+
     # Save model
     parser.add_argument("--save_dir", type=str, default="./data/models/gan")
+    parser.add_argument("--save_ckpt", type=int, default=20)
 
     args = parser.parse_args()
     main(args)
