@@ -46,6 +46,8 @@ def main(args):
     checkpoint_dir = args.save_dir + '/training_checkpoints'
     checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
 
+    os.makedirs(args.save_dir, exist_ok=True)
+
     loss_history = {"discriminator": [], "generator": []}
 
     for epoch in range(args.epochs):
@@ -84,8 +86,7 @@ def main(args):
         ax.set_title("Losses history")
         fig.savefig(args.save_dir+"losses.png")
 
-    if not os.path.exists(args.save_dir):
-        os.makedirs(args.save_dir)
+    
 
     tf.keras.models.save_model(generator, args.save_dir)
 
