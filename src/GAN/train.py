@@ -21,7 +21,7 @@ import os
 import tensorflow as tf
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # for ignoring the some of tf warnings
 
-from dcgan import make_generator_model, make_discriminator_model
+from dcgan_old import make_generator_model, make_discriminator_model
 from utils import *
 
 def main(args):
