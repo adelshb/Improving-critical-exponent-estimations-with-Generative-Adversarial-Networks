@@ -65,8 +65,8 @@ def main(args):
                                              label_smoothing={'fake': args.label_smoothing_fake, 'real': args.label_smoothing_real},
                                              waiting=args.waiting)
 
-            loss_history["discriminator"].append(disc_loss)
-            loss_history["generator"].append(gen_loss)
+        loss_history["discriminator"].append(disc_loss)
+        loss_history["generator"].append(gen_loss)
 
         print("Epochs {}: generator loss:{}, discriminator loss:{} in {} sec.".format(epoch, gen_loss, disc_loss, time.time()-start))
 
