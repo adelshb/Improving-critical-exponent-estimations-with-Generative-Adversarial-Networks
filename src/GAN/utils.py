@@ -65,8 +65,6 @@ def train_step(images: Tensor,
     gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
     discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
     
-    #from IPython import embed; embed()
-    
     ### Training the generator
     
     with tf.GradientTape() as gen_tape:
@@ -79,6 +77,8 @@ def train_step(images: Tensor,
             
     gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
     generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
+
+    from IPython import embed; embed()
 
     return gen_loss, disc_loss
 

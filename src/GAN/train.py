@@ -74,21 +74,20 @@ def main(args):
         if (epoch + 1) % args.save_ckpt == 0:
             checkpoint.save(file_prefix = checkpoint_prefix)
 
+        # plotting the losses
+        fig, ax = plt.subplots(1, 1)
+        fig.set_size_inches(10, 7)
+        ax.plot(loss_history["generator"], label='generator')
+        ax.plot(loss_history["discriminator"], label='discriminator')
+        ax.grid(True)
+        ax.legend()
+        ax.set_title("Losses history")
+        fig.savefig("./saved_files/losses.png")
+
     if not os.path.exists(args.save_dir):
         os.makedirs(args.save_dir)
 
     tf.keras.models.save_model(generator, args.save_dir)
-
-    # plotting the losses
-    
-    fig, ax = plt.subplots(1, 1)
-    fig.set_size_inches(10, 7)
-    ax.plot(loss_history["generator"], label='generator')
-    ax.plot(loss_history["discriminator"], label='discriminator')
-    ax.grid(True)
-    ax.legend()
-    ax.set_title("Losses history")
-    fig.savefig("./saved_files/losses.png")
 
 if __name__ == "__main__":
     parser = ArgumentParser()
