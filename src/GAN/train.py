@@ -32,6 +32,7 @@ def main(args):
 
     generator = make_generator_model()
     discriminator = make_discriminator_model()
+    cnn = tf.keras.models.load_model(args.CNN_model_path, custom_objects={'tf': tf})
 
     cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 
@@ -95,6 +96,7 @@ if __name__ == "__main__":
 
     # Data
     parser.add_argument("--data_path", type=str, default="./data/simulation/L=128_p=0.5928.npz")
+    parser.add_argument("--CNN_model_path", type=str, default="./saved_models/CNN_L128_N10000/saved-model.h5")
 
     # Training parameters
     parser.add_argument("--batch_size", type=int, default=50)

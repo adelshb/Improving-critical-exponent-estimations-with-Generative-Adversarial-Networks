@@ -110,3 +110,12 @@ def generate_and_save_images(model, epoch, test_input):
 
   plt.savefig('./data/generated/image_at_epoch_{:04d}.png'.format(epoch))
   #plt.show()
+
+def test_with_cnn(cnn: Sequential,
+                  images: Tensor):
+    
+    images = tf.sign(images)
+    predictions = cnn(images)
+    
+    return predictions
+    
