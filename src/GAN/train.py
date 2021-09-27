@@ -21,7 +21,7 @@ import os
 import tensorflow as tf
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # for ignoring the some of tf warnings
 
-from dcgan_old import make_generator_model, make_discriminator_model
+from dcgan import make_generator_model, make_discriminator_model
 from utils import *
 
 def main(args):
@@ -82,7 +82,7 @@ def main(args):
         ax.grid(True)
         ax.legend()
         ax.set_title("Losses history")
-        fig.savefig("./saved_files/losses.png")
+        fig.savefig(args.save_dir+"losses.png")
 
     if not os.path.exists(args.save_dir):
         os.makedirs(args.save_dir)
