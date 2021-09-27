@@ -36,7 +36,6 @@ def train_step(generator: Sequential,
                generator_optimizer: Optimizer, 
                cross_entropy: Loss, 
                noise: Tensor, 
-               stddev: Optional[float] = 0.5,
                ):
 
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:

@@ -20,14 +20,14 @@ import os
 import tensorflow as tf
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # for ignoring the some of tf warnings
 
-from dcgan import make_generator_model, make_cnn_model
+from dcgan import make_generator_model
 from utils import *
 
 def main(args):
 
-    generator = make_generator_model()
-    cnn = make_cnn_model()
-
+    generator = make_generator_model(args.noise_dim)
+    cnn = tf.keras.models.load_model(args.CNN_model_path, custom_objects={'tf': tf})
+    
     cross_entropy = tf.keras.losses.SparseCategoricalCrossentropy()
     generator_optimizer = tf.keras.optimizers.Adam(1e-3)
 
@@ -39,14 +39,13 @@ def main(args):
 
         start = time.time()
 
-        noise = tf.random.normal([args.batch_size, args.noise_dim])
+        noise = tf.random.normal([args.batch_size, args.noise_dim], mean=0, stddev=1.0)
 
         gen_loss = train_step(generator= generator, 
                               cnn=cnn, 
                               generator_optimizer= generator_optimizer,  
                               cross_entropy= cross_entropy, 
                               noise= noise, 
-                              stddev= 0.5,
                               )
 
         print("Epochs {}: generator loss:{}, in {} sec.".format(epoch, gen_loss, time.time()-start))
@@ -71,6 +70,8 @@ if __name__ == "__main__":
     parser.add_argument("--noise_dim", type=int, default=100)
     # Save model
     parser.add_argument("--save_dir", type=str, default="./data/models/gan")
+    
+    parser.add_argument("--CNN_model_path", type=str, default="./saved_models/CNN_L128_N10000/saved-model.h5")
 
     args = parser.parse_args()
     main(args)
