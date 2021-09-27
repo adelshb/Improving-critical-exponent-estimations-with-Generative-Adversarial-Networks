@@ -34,9 +34,20 @@ def discriminator_loss(cross_entropy: Loss, real_output: Tensor, fake_output: Te
     
     return total_loss
 
+def cnn_loss(cross_entropy: Loss, 
+             images: Tensor,
+             cnn: Sequential,
+             bin: int = 24):
+    
+    predictions = cnn(images) 
+    wanted_output = np.full(predictions.shape[0], bin, dtype=int)
+    
+    return cross_entropy(wanted_output, predictions)
+
 def train_step(images: Tensor, 
                generator: Sequential, 
                discriminator: Sequential, 
+               cnn: Sequential,
                generator_optimizer: Optimizer, 
                discriminator_optimizer: Optimizer, 
                cross_entropy: Loss, 
@@ -53,6 +64,9 @@ def train_step(images: Tensor,
         noise = tf.random.normal([batch_size, noise_dim])
         generated_images = generator(noise, training=True)
 
+        # compute the CNN predicitions for logging, not used in training yet
+        CNN_loss = cnn_loss(images)
+
         # Adding Gaussian noise to all images 
         images = images + tf.random.normal(shape=images.shape, stddev=stddev)
         generated_images = generated_images + tf.random.normal(shape=generated_images.shape, stddev=stddev)
@@ -67,17 +81,6 @@ def train_step(images: Tensor,
     
     ### Training the generator
     
-    # with tf.GradientTape() as gen_tape:
-    
-    #     for _ in range(waiting):
-    #         noise = tf.random.normal([batch_size, noise_dim])
-    #         generated_images = generator(noise, training=True)
-    #         fake_output = discriminator(generated_images, training=True)
-    #         gen_loss = generator_loss(cross_entropy, fake_output)
-            
-    # gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
-    # generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
-
     for _ in range(waiting):
 
         with tf.GradientTape() as gen_tape:
@@ -92,7 +95,7 @@ def train_step(images: Tensor,
 
     # from IPython import embed; embed()
 
-    return gen_loss, disc_loss
+    return gen_loss, disc_loss, CNN_loss
 
 def read_npy_file(item):
     data = np.load(item)
@@ -110,12 +113,4 @@ def generate_and_save_images(model, epoch, test_input):
 
   plt.savefig('./data/generated/image_at_epoch_{:04d}.png'.format(epoch))
   #plt.show()
-
-def test_with_cnn(cnn: Sequential,
-                  images: Tensor):
-    
-    images = tf.sign(images)
-    predictions = cnn(images)
-    
-    return predictions
-    
+  

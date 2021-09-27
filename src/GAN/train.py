@@ -49,16 +49,17 @@ def main(args):
 
     os.makedirs(args.save_dir, exist_ok=True)
 
-    loss_history = {"discriminator": [], "generator": []}
+    loss_history = {"discriminator": [], "generator": [], "cnn": []}
 
     for epoch in range(args.epochs):
 
         start = time.time()
         for image_batch in train_dataset:
 
-            gen_loss, disc_loss = train_step(images=image_batch, 
+            gen_loss, disc_loss, cnn_loss = train_step(images=image_batch, 
                                              generator=generator, 
                                              discriminator=discriminator, 
+                                             cnn=cnn,
                                              generator_optimizer=generator_optimizer, 
                                              discriminator_optimizer=discriminator_optimizer, 
                                              cross_entropy=cross_entropy, 
@@ -70,8 +71,9 @@ def main(args):
 
         loss_history["discriminator"].append(disc_loss)
         loss_history["generator"].append(gen_loss)
-
-        print("Epochs {}: generator loss:{}, discriminator loss:{} in {} sec.".format(epoch, gen_loss, disc_loss, time.time()-start))
+        loss_history["cnn"].append(cnn_loss)
+        
+        print("Epochs {}: generator loss:{:.4f}, discriminator loss:{:.4f}, cnn loss:{:.4f}, in {} sec.".format(epoch, gen_loss, disc_loss, time.time()-start))
 
         #Save the model every args.save_ckpt epochs
         if (epoch + 1) % args.save_ckpt == 0:
@@ -82,6 +84,7 @@ def main(args):
         fig.set_size_inches(10, 7)
         ax.plot(loss_history["generator"], label='generator')
         ax.plot(loss_history["discriminator"], label='discriminator')
+        ax.plot(loss_history["cnn"], label='cnn')
         ax.grid(True)
         ax.legend()
         ax.set_title("Losses history")
