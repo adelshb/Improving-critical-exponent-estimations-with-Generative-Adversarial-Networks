@@ -34,7 +34,7 @@ def discriminator_loss(cross_entropy: Loss, real_output: Tensor, fake_output: Te
     
     return total_loss
 
-def cnn_loss(cross_entropy: Loss, 
+def cnn_loss(sparse_cross_entropy: Loss, 
              images: Tensor,
              cnn: Sequential,
              bin: int = 24):
@@ -42,7 +42,7 @@ def cnn_loss(cross_entropy: Loss,
     predictions = cnn(images) 
     wanted_output = np.full(predictions.shape[0], bin, dtype=int)
     
-    return cross_entropy(wanted_output, predictions)
+    return sparse_cross_entropy(wanted_output, predictions)
 
 def train_step(images: Tensor, 
                generator: Sequential, 
@@ -51,6 +51,7 @@ def train_step(images: Tensor,
                generator_optimizer: Optimizer, 
                discriminator_optimizer: Optimizer, 
                cross_entropy: Loss, 
+               sparse_cross_entropy: Loss,
                noise_dim: int,
                batch_size: int,
                stddev: Optional[float] = 0.5,
@@ -65,7 +66,9 @@ def train_step(images: Tensor,
         generated_images = generator(noise, training=True)
 
         # compute the CNN predicitions for logging, not used in training yet
-        CNN_loss = cnn_loss(images)
+        CNN_loss = cnn_loss(sparse_cross_entropy=sparse_cross_entropy, 
+                            images=images, 
+                            cnn=cnn)
 
         # Adding Gaussian noise to all images 
         images = images + tf.random.normal(shape=images.shape, stddev=stddev)

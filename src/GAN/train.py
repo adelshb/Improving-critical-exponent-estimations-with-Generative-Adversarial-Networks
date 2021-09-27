@@ -34,7 +34,8 @@ def main(args):
     discriminator = make_discriminator_model()
     cnn = tf.keras.models.load_model(args.CNN_model_path, custom_objects={'tf': tf})
 
-    cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+    cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True) # for the generator and discriminator
+    sparse_cross_entropy = tf.keras.losses.SparseCategoricalCrossentropy() # for the cnn loss
 
     generator_optimizer = tf.keras.optimizers.Adam(1e-3)
     discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
@@ -63,6 +64,7 @@ def main(args):
                                              generator_optimizer=generator_optimizer, 
                                              discriminator_optimizer=discriminator_optimizer, 
                                              cross_entropy=cross_entropy, 
+                                             sparse_cross_entropy=sparse_cross_entropy,
                                              noise_dim=args.noise_dim,
                                              batch_size=args.batch_size, 
                                              stddev=args.input_noise_stddev,
@@ -73,7 +75,7 @@ def main(args):
         loss_history["generator"].append(gen_loss)
         loss_history["cnn"].append(cnn_loss)
         
-        print("Epochs {}: generator loss:{:.4f}, discriminator loss:{:.4f}, cnn loss:{:.4f}, in {} sec.".format(epoch, gen_loss, disc_loss, time.time()-start))
+        print("Epochs {}: generator loss:{:.4f}, discriminator loss:{:.4f}, cnn loss:{:.4f}, in {} sec.".format(epoch, gen_loss, disc_loss, cnn_loss, time.time()-start))
 
         #Save the model every args.save_ckpt epochs
         if (epoch + 1) % args.save_ckpt == 0:
