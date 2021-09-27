@@ -62,7 +62,8 @@ def main(args):
                                              noise_dim=args.noise_dim,
                                              batch_size=args.batch_size, 
                                              stddev=args.input_noise_stddev,
-                                             label_smoothing={'fake': args.label_smoothing_fake, 'real': args.label_smoothing_real})
+                                             label_smoothing={'fake': args.label_smoothing_fake, 'real': args.label_smoothing_real},
+                                             waiting=args.waiting)
 
             loss_history["discriminator"].append(disc_loss)
             loss_history["generator"].append(gen_loss)
@@ -102,6 +103,7 @@ if __name__ == "__main__":
     parser.add_argument("--input_noise_stddev", type=float, default=0.1)
     parser.add_argument("--label_smoothing_real", type=float, default=0.05)
     parser.add_argument("--label_smoothing_fake", type=float, default=0)
+    parser.add_argument("--waiting", type=int, default=2)
 
     # Save model
     parser.add_argument("--save_dir", type=str, default="./data/models/gan")

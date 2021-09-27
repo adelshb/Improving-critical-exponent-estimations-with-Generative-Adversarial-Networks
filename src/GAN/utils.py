@@ -43,7 +43,8 @@ def train_step(images: Tensor,
                noise_dim: int,
                batch_size: int,
                stddev: Optional[float] = 0.5,
-               label_smoothing: Dict = {'fake': 0.0, 'real': 0.0}):
+               label_smoothing: Dict = {'fake': 0.0, 'real': 0.0},
+               waiting: int = 2):
 
     ### Training the discriminator
 
@@ -70,7 +71,7 @@ def train_step(images: Tensor,
     
     with tf.GradientTape() as gen_tape:
     
-        for _ in range(2):
+        for _ in range(waiting):
             noise = tf.random.normal([batch_size, noise_dim])
             generated_images = generator(noise, training=True)
             fake_output = discriminator(generated_images, training=True)
