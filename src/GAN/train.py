@@ -35,7 +35,7 @@ def main(args):
 
     cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 
-    generator_optimizer = tf.keras.optimizers.Adam(1e-4)
+    generator_optimizer = tf.keras.optimizers.Adam(1e-3)
     discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
 
     checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
@@ -100,8 +100,8 @@ if __name__ == "__main__":
     parser.add_argument("--batch_size", type=int, default=50)
     parser.add_argument("--epochs", type=int, default=200)
     parser.add_argument("--noise_dim", type=int, default=100)
-    parser.add_argument("--input_noise_stddev", type=float, default=0.1)
-    parser.add_argument("--label_smoothing_real", type=float, default=0.05)
+    parser.add_argument("--input_noise_stddev", type=float, default=0.3)
+    parser.add_argument("--label_smoothing_real", type=float, default=0.1)
     parser.add_argument("--label_smoothing_fake", type=float, default=0)
     parser.add_argument("--waiting", type=int, default=2)
 

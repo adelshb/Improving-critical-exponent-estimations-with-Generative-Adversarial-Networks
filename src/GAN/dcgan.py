@@ -87,34 +87,48 @@ def make_generator_model():
 
 def make_discriminator_model(dropout_rate=0.0):
     
+    # model = tf.keras.Sequential()
+    
+    # model.add(layers.Conv2D(32, (3, 3), padding='same', input_shape=(128, 128, 1)))
+    # model.add(layers.LeakyReLU())
+    # # model.add(layers.Conv2D(32, (3, 3), padding='same'))
+    # # model.add(layers.LeakyReLU())
+    # model.add(layers.MaxPooling2D((2,2)))
+    
+    # model.add(layers.Conv2D(64, (3, 3), padding='same'))
+    # model.add(layers.LeakyReLU())
+    # # model.add(layers.Conv2D(64, (3, 3), padding='same'))
+    # # model.add(layers.LeakyReLU())
+    # model.add(layers.MaxPooling2D((2,2)))
+    
+    # model.add(layers.Conv2D(128, (3, 3), padding='same'))
+    # model.add(layers.LeakyReLU())
+    # # model.add(layers.Conv2D(128, (3, 3), padding='same'))
+    # # model.add(layers.LeakyReLU())
+    # model.add(layers.MaxPooling2D((2,2)))
+    
+    # model.add(layers.Conv2D(256, (3, 3), padding='same'))
+    # model.add(layers.LeakyReLU())
+    # # model.add(layers.Conv2D(256, (3, 3), padding='same'))
+    # # model.add(layers.LeakyReLU())
+    # model.add(layers.MaxPooling2D((2,2)))
+    
+    # if dropout_rate > 0:
+    #     model.add(layers.Dropout(0.5))
+
+    # model.add(layers.Flatten())
+    # model.add(layers.Dense(1))
+
+
     model = tf.keras.Sequential()
-    
-    model.add(layers.Conv2D(32, (3, 3), padding='same', input_shape=(128, 128, 1)))
+    model.add(layers.Conv2D(64, (3, 3), strides=(2, 2), padding='same',
+                                     input_shape=(128, 128, 1)))
     model.add(layers.LeakyReLU())
-    model.add(layers.Conv2D(32, (3, 3), padding='same'))
+    model.add(layers.Dropout(0.5))
+
+    model.add(layers.Conv2D(128, (3, 3), strides=(2, 2), padding='same'))
     model.add(layers.LeakyReLU())
-    model.add(layers.MaxPooling2D((2,2)))
-    
-    model.add(layers.Conv2D(64, (3, 3), padding='same'))
-    model.add(layers.LeakyReLU())
-    model.add(layers.Conv2D(64, (3, 3), padding='same'))
-    model.add(layers.LeakyReLU())
-    model.add(layers.MaxPooling2D((2,2)))
-    
-    model.add(layers.Conv2D(128, (3, 3), padding='same'))
-    model.add(layers.LeakyReLU())
-    model.add(layers.Conv2D(128, (3, 3), padding='same'))
-    model.add(layers.LeakyReLU())
-    model.add(layers.MaxPooling2D((2,2)))
-    
-    model.add(layers.Conv2D(256, (3, 3), padding='same'))
-    model.add(layers.LeakyReLU())
-    model.add(layers.Conv2D(256, (3, 3), padding='same'))
-    model.add(layers.LeakyReLU())
-    model.add(layers.MaxPooling2D((2,2)))
-    
-    if dropout_rate > 0:
-        model.add(layers.Dropout(0.3))
+    model.add(layers.Dropout(0.5))
 
     model.add(layers.Flatten())
     model.add(layers.Dense(1))

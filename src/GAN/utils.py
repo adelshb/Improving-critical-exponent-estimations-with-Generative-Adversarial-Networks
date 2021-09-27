@@ -67,18 +67,30 @@ def train_step(images: Tensor,
     
     ### Training the generator
     
-    with tf.GradientTape() as gen_tape:
+    # with tf.GradientTape() as gen_tape:
     
-        for _ in range(waiting):
+    #     for _ in range(waiting):
+    #         noise = tf.random.normal([batch_size, noise_dim])
+    #         generated_images = generator(noise, training=True)
+    #         fake_output = discriminator(generated_images, training=True)
+    #         gen_loss = generator_loss(cross_entropy, fake_output)
+            
+    # gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
+    # generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
+
+    for _ in range(waiting):
+
+        with tf.GradientTape() as gen_tape:
+        
             noise = tf.random.normal([batch_size, noise_dim])
             generated_images = generator(noise, training=True)
             fake_output = discriminator(generated_images, training=True)
             gen_loss = generator_loss(cross_entropy, fake_output)
             
-    gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
-    generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
+        gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
+        generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
 
-    from IPython import embed; embed()
+    # from IPython import embed; embed()
 
     return gen_loss, disc_loss
 
