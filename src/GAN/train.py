@@ -14,6 +14,7 @@
 
 from argparse import ArgumentParser
 import time
+import matplotlib.pyplot as plt
 import numpy as np
 import os
 
@@ -45,26 +46,30 @@ def main(args):
     checkpoint_dir = args.save_dir + '/training_checkpoints'
     checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
 
+    loss_history = {"discriminator": [], "generator": []}
+
     for epoch in range(args.epochs):
 
         start = time.time()
         for image_batch in train_dataset:
 
-            noise = tf.random.normal([args.batch_size, args.noise_dim])
-
-            gen_loss, disc_loss = train_step(images= image_batch, 
-                                             generator= generator, 
-                                             discriminator= discriminator, 
-                                             generator_optimizer= generator_optimizer, 
-                                             discriminator_optimizer= discriminator_optimizer, 
-                                             cross_entropy= cross_entropy, 
-                                             noise= noise, 
-                                             stddev= args.input_noise_stddev,
+            gen_loss, disc_loss = train_step(images=image_batch, 
+                                             generator=generator, 
+                                             discriminator=discriminator, 
+                                             generator_optimizer=generator_optimizer, 
+                                             discriminator_optimizer=discriminator_optimizer, 
+                                             cross_entropy=cross_entropy, 
+                                             noise_dim=args.noise_dim,
+                                             batch_size=args.batch_size, 
+                                             stddev=args.input_noise_stddev,
                                              label_smoothing={'fake': args.label_smoothing_fake, 'real': args.label_smoothing_real})
+
+            loss_history["discriminator"].append(disc_loss)
+            loss_history["generator"].append(gen_loss)
 
         print("Epochs {}: generator loss:{}, discriminator loss:{} in {} sec.".format(epoch, gen_loss, disc_loss, time.time()-start))
 
-        #Save the model every 50 epochs
+        #Save the model every args.save_ckpt epochs
         if (epoch + 1) % args.save_ckpt == 0:
             checkpoint.save(file_prefix = checkpoint_prefix)
 
@@ -72,6 +77,17 @@ def main(args):
         os.makedirs(args.save_dir)
 
     tf.keras.models.save_model(generator, args.save_dir)
+
+    # plotting the losses
+    
+    fig, ax = plt.subplots(1, 1)
+    fig.set_size_inches(10, 7)
+    ax.plot(loss_history["generator"], label='generator')
+    ax.plot(loss_history["discriminator"], label='discriminator')
+    ax.grid(True)
+    ax.legend()
+    ax.set_title("Losses history")
+    fig.savefig("./saved_files/losses.png")
 
 if __name__ == "__main__":
     parser = ArgumentParser()

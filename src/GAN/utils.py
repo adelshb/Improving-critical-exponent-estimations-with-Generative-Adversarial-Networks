@@ -27,9 +27,11 @@ def generator_loss(cross_entropy: Loss, fake_output: Tensor):
 
 def discriminator_loss(cross_entropy: Loss, real_output: Tensor, fake_output: Tensor, 
                        label_smoothing: Dict = {'fake': 0.0, 'real': 0.0}):
+    
     real_loss = cross_entropy(tf.ones_like(real_output) - label_smoothing['real'], real_output)
     fake_loss = cross_entropy(tf.zeros_like(fake_output) + label_smoothing['fake'], fake_output)
-    total_loss = real_loss + fake_loss
+    total_loss = 0.5 * (real_loss + fake_loss)
+    
     return total_loss
 
 def train_step(images: Tensor, 
@@ -38,11 +40,16 @@ def train_step(images: Tensor,
                generator_optimizer: Optimizer, 
                discriminator_optimizer: Optimizer, 
                cross_entropy: Loss, 
-               noise: Tensor, 
+               noise_dim: int,
+               batch_size: int,
                stddev: Optional[float] = 0.5,
                label_smoothing: Dict = {'fake': 0.0, 'real': 0.0}):
 
-    with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
+    ### Training the discriminator
+
+    with tf.GradientTape() as disc_tape:
+    
+        noise = tf.random.normal([batch_size, noise_dim])
         generated_images = generator(noise, training=True)
 
         # Adding Gaussian noise to all images 
@@ -52,17 +59,25 @@ def train_step(images: Tensor,
         # Discriminator predictions
         real_output = discriminator(images, training=True)
         fake_output = discriminator(generated_images, training=True)
-
-        # Computing loss
-        gen_loss = generator_loss(cross_entropy, fake_output)
         disc_loss = discriminator_loss(cross_entropy, real_output, fake_output, label_smoothing)
-
-    # Updates
-    gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
-    generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
 
     gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
     discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
+    
+    #from IPython import embed; embed()
+    
+    ### Training the generator
+    
+    with tf.GradientTape() as gen_tape:
+    
+        for _ in range(2):
+            noise = tf.random.normal([batch_size, noise_dim])
+            generated_images = generator(noise, training=True)
+            fake_output = discriminator(generated_images, training=True)
+            gen_loss = generator_loss(cross_entropy, fake_output)
+            
+    gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
+    generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
 
     return gen_loss, disc_loss
 
