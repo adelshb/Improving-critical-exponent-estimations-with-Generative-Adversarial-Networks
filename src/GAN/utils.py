@@ -80,7 +80,7 @@ def plot_losses(loss_history: Dict,
     ax.grid(True)
     ax.legend()
     ax.set_title("Losses history")
-    fig.savefig(save_dir + "losses.png")
+    fig.savefig(save_dir + "/losses.png")
 
 def train_step(images: Tensor, 
                generator: Sequential, 
