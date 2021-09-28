@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Written by Adel Sohbi, https://github.com/adelshb
+# Written by Adel Sohbi and Matthieu Sarkis, https://github.com/adelshb, https://github.com/MatthieuSarkis
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -58,18 +58,18 @@ def main(args):
         for image_batch in train_dataset:
 
             gen_loss, disc_loss, cnn_loss = train_step(images=image_batch, 
-                                             generator=generator, 
-                                             discriminator=discriminator, 
-                                             cnn=cnn,
-                                             generator_optimizer=generator_optimizer, 
-                                             discriminator_optimizer=discriminator_optimizer, 
-                                             cross_entropy=cross_entropy, 
-                                             sparse_cross_entropy=sparse_cross_entropy,
-                                             noise_dim=args.noise_dim,
-                                             batch_size=args.batch_size, 
-                                             stddev=args.input_noise_stddev,
-                                             label_smoothing={'fake': args.label_smoothing_fake, 'real': args.label_smoothing_real},
-                                             waiting=args.waiting)
+                                                       generator=generator, 
+                                                       discriminator=discriminator, 
+                                                       cnn=cnn,
+                                                       generator_optimizer=generator_optimizer, 
+                                                       discriminator_optimizer=discriminator_optimizer, 
+                                                       cross_entropy=cross_entropy, 
+                                                       sparse_cross_entropy=sparse_cross_entropy,
+                                                       noise_dim=args.noise_dim,
+                                                       batch_size=args.batch_size, 
+                                                       stddev=args.input_noise_stddev,
+                                                       label_smoothing={'fake': args.label_smoothing_fake, 'real': args.label_smoothing_real},
+                                                       waiting=args.waiting)
 
         loss_history["discriminator"].append(disc_loss)
         loss_history["generator"].append(gen_loss)
@@ -81,18 +81,14 @@ def main(args):
         if (epoch + 1) % args.save_ckpt == 0:
             checkpoint.save(file_prefix = checkpoint_prefix)
 
-        # plotting the losses
-        fig, ax = plt.subplots(1, 1)
-        fig.set_size_inches(10, 7)
-        ax.plot(loss_history["generator"], label='generator')
-        ax.plot(loss_history["discriminator"], label='discriminator')
-        ax.plot(loss_history["cnn"], label='cnn')
-        ax.grid(True)
-        ax.legend()
-        ax.set_title("Losses history")
-        fig.savefig(args.save_dir+"losses.png")
-
-    
+        # Some plots for logs
+        plot_losses(loss_history, args.save_dir)
+        plot_cnn_histogram(generator=generator,
+                           cnn=cnn,
+                           epoch=epoch,
+                           save_dir=args.save_dir,
+                           labels="saved_models/CNN_L128_N10000/labels.json",
+                           noise_dim=args.noise_dim)
 
     tf.keras.models.save_model(generator, args.save_dir)
 
