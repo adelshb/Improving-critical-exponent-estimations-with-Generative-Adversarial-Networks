@@ -26,10 +26,11 @@ import matplotlib.pyplot as plt
 
 def generator_loss(cross_entropy: Loss, 
                    generated_images: Tensor,
-                   cnn: Sequential):
+                   cnn: Sequential,
+                   category: int = 24):
     
     predicted_probabilities = cnn(generated_images) 
-    wanted_output = np.full(predicted_probabilities.shape[0], 24, dtype=int)
+    wanted_output = np.full(predicted_probabilities.shape[0], category, dtype=int)
     
     return cross_entropy(wanted_output, predicted_probabilities)
 
@@ -40,7 +41,7 @@ def plot_cnn_histogram(generator: Sequential,
                        labels: str = "saved_models/CNN_L128_N10000/labels.json",
                        noise_dim: int = 100):
     
-    with open("saved_models/CNN_L128_N10000/labels.json", 'r') as f:
+    with open(labels, 'r') as f:
         labels = json.load(f)
     reversed_labels = {value : float(key) for (key, value) in labels.items()}
     
