@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Written by Adel Sohbi, https://github.com/adelshb
+# Written by Adel Sohbi and Matthieu Sarkis, https://github.com/adelshb, https://github.com/MatthieuSarkis
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory

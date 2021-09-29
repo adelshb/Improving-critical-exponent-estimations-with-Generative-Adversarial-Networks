@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Written by Adel Sohbi, https://github.com/adelshb
+# Written by Adel Sohbi and Matthieu Sarkis, https://github.com/adelshb, https://github.com/MatthieuSarkis
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -11,6 +11,8 @@
 # that they have been altered from the originals.
 
 import numpy as np
+import json
+import os
 
 from typing import Dict, Optional
 
@@ -30,6 +32,42 @@ def generator_loss(cross_entropy: Loss,
     wanted_output = np.full(predicted_probabilities.shape[0], 24, dtype=int)
     
     return cross_entropy(wanted_output, predicted_probabilities)
+
+def plot_cnn_histogram(generator: Sequential,
+                       cnn: Sequential,
+                       epoch: int,
+                       save_dir: str,
+                       labels: str = "saved_models/CNN_L128_N10000/labels.json",
+                       noise_dim: int = 100):
+    
+    with open("saved_models/CNN_L128_N10000/labels.json", 'r') as f:
+        labels = json.load(f)
+    reversed_labels = {value : float(key) for (key, value) in labels.items()}
+    
+    noise = tf.random.normal([100, noise_dim])
+    images = generator(noise, training=False)
+    
+    y_pred = cnn.predict(images).argmax(axis=1)
+    y_pred = [reversed_labels[i] for i in y_pred]
+    
+    plt.hist(y_pred)
+    plt.title("Distribution of the value of p for GAN generated critical configurations")
+    path = os.path.join(save_dir, "histograms/")
+    os.makedirs(path, exist_ok=True)
+    plt.savefig(path + "generatedImages_epoch{}.png".format(epoch))
+
+def plot_losses(loss_history: Dict,
+                save_dir: str):
+    
+    fig, ax = plt.subplots(1, 1)
+    fig.set_size_inches(10, 7)
+    ax.plot(loss_history["generator"], label='generator')
+    ax.plot(loss_history["discriminator"], label='discriminator')
+    ax.plot(loss_history["cnn"], label='cnn')
+    ax.grid(True)
+    ax.legend()
+    ax.set_title("Losses history")
+    fig.savefig(save_dir + "/losses.png")
 
 def train_step(generator: Sequential, 
                cnn: Sequential, 
