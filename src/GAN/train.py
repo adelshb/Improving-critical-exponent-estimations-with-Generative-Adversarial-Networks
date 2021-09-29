@@ -14,7 +14,6 @@
 
 from argparse import ArgumentParser
 import time
-import numpy as np
 import os
 
 import tensorflow as tf
