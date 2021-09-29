@@ -78,8 +78,6 @@ def main(args):
     
     #print(X[0])
     
-    
-
     plt.hist(y_pred)
     plt.title("Distribution of the value of p for GAN generated critical configurations")
     if not os.path.exists(args.saving_path):
