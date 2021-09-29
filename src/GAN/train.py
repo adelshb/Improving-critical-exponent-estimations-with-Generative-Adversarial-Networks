@@ -34,6 +34,8 @@ def main(args):
     checkpoint_dir = args.save_dir + '/training_checkpoints'
     checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
 
+    loss_history = {'generator': []}
+
     for epoch in range(args.epochs):
 
         start = time.time()
@@ -47,13 +49,24 @@ def main(args):
                               noise= noise, 
                               )
 
-        print("Epochs {}: generator loss:{}, in {} sec.".format(epoch, gen_loss, time.time()-start))
+        print("Epochs {}: generator loss:{:4f}, in {} sec.".format(epoch, gen_loss, time.time()-start))
 
         if (epoch + 1) % 50 == 0:
             checkpoint.save(file_prefix = checkpoint_prefix)
 
+    loss_history['generator'].append(gen_loss)
+
     if not os.path.exists(args.save_dir):
         os.makedirs(args.save_dir)
+
+    plot_cnn_histogram(generator=generator,
+                       cnn=cnn,
+                       epoch=epoch,
+                       save_dir=args.save_dir,
+                       labels="saved_models/CNN_L128_N10000/labels.json",
+                       noise_dim=args.noise_dim)
+    plot_losses(loss_history=loss_history,
+                save_dir=args.save_dir)
 
     tf.keras.models.save_model(generator, args.save_dir)
 

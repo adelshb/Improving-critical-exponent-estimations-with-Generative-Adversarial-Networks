@@ -62,12 +62,10 @@ def plot_losses(loss_history: Dict,
     fig, ax = plt.subplots(1, 1)
     fig.set_size_inches(10, 7)
     ax.plot(loss_history["generator"], label='generator')
-    ax.plot(loss_history["discriminator"], label='discriminator')
-    ax.plot(loss_history["cnn"], label='cnn')
     ax.grid(True)
     ax.legend()
-    ax.set_title("Losses history")
-    fig.savefig(save_dir + "/losses.png")
+    ax.set_title("Loss history")
+    fig.savefig(save_dir + "/loss.png")
 
 def train_step(generator: Sequential, 
                cnn: Sequential, 
