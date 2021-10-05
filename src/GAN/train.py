@@ -54,10 +54,9 @@ def main(args):
         if (epoch + 1) % args.ckpt_freq == 0:
             checkpoint.save(file_prefix = checkpoint_prefix)
 
-    loss_history['generator'].append(gen_loss)
+        loss_history['generator'].append(gen_loss)
 
-    if not os.path.exists(args.save_dir):
-        os.makedirs(args.save_dir)
+    os.makedirs(args.save_dir, exist_ok=True)
 
     plot_cnn_histogram(generator=generator,
                        cnn=cnn,
