@@ -45,17 +45,18 @@ def plot_cnn_histogram(generator: Sequential,
         labels = json.load(f)
     reversed_labels = {value : float(key) for (key, value) in labels.items()}
     
-    noise = tf.random.normal([100, noise_dim])
+    noise = tf.random.normal([1600, noise_dim])
     images = generator(noise, training=False)
     
     y_pred = cnn.predict(images).argmax(axis=1)
     y_pred = [reversed_labels[i] for i in y_pred]
     
-    plt.hist(y_pred)
-    plt.title("Distribution of the value of p for GAN generated critical configurations")
+    fig, ax = plt.subplots(1, 1)
+    ax.hist(y_pred)
+    ax.set_title("Distribution of the value of p for GAN generated critical configurations")
     path = os.path.join(save_dir, "histograms/")
     os.makedirs(path, exist_ok=True)
-    plt.savefig(path + "generatedImages_epoch{}.png".format(epoch))
+    fig.savefig(path + "generatedImages_epoch{}.png".format(epoch))
 
 def plot_losses(loss_history: Dict,
                 save_dir: str):
