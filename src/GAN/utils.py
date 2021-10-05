@@ -52,7 +52,7 @@ def plot_cnn_histogram(generator: Sequential,
     y_pred = [reversed_labels[i] for i in y_pred]
     
     fig, ax = plt.subplots(1, 1)
-    ax.hist(y_pred)
+    ax.hist(y_pred, color='b')
     ax.set_title("Distribution of the value of p for GAN generated critical configurations")
     path = os.path.join(save_dir, "histograms/")
     os.makedirs(path, exist_ok=True)
