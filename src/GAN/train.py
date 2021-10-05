@@ -65,8 +65,8 @@ def main(args):
                        labels="saved_models/CNN_L128_N10000/labels.json",
                        noise_dim=args.noise_dim)
     
-    plot_losses(loss_history=loss_history,
-                save_dir=args.save_dir)
+        plot_losses(loss_history=loss_history,
+                    save_dir=args.save_dir)
 
     tf.keras.models.save_model(generator, args.save_dir)
     
