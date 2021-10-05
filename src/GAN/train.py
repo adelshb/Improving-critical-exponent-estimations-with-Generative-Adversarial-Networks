@@ -51,7 +51,7 @@ def main(args):
 
         print("Epochs {}: generator loss:{:4f}, in {} sec.".format(epoch, gen_loss, time.time()-start))
 
-        if (epoch + 1) % 50 == 0:
+        if (epoch + 1) % args.ckpt_freq == 0:
             checkpoint.save(file_prefix = checkpoint_prefix)
 
     loss_history['generator'].append(gen_loss)
@@ -74,14 +74,16 @@ if __name__ == "__main__":
     parser = ArgumentParser()
 
     # Data
-    parser.add_argument("--data_path", type=str, default="./data/simulation/L=128_p=0.5928.npz")
+    # parser.add_argument("--data_path", type=str, default="./data/simulation/L=128_p=0.5928.npz")
 
     # Training parameters
-    parser.add_argument("--batch_size", type=int, default=50)
+    parser.add_argument("--batch_size", type=int, default=512)
     parser.add_argument("--epochs", type=int, default=200)
     parser.add_argument("--noise_dim", type=int, default=100)
+
     # Save model
-    parser.add_argument("--save_dir", type=str, default="./data/models/gan")
+    parser.add_argument("--save_dir", type=str, default="./saved_models/gan_cnn-loss")
+    parser.add_argument("--ckpt_freq", type=int, default=10)
     
     parser.add_argument("--CNN_model_path", type=str, default="./saved_models/CNN_L128_N10000/saved-model.h5")
 
