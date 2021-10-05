@@ -15,6 +15,7 @@
 from argparse import ArgumentParser
 import time
 import os
+import json
 
 import tensorflow as tf
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # for ignoring the some of tf warnings
@@ -35,6 +36,7 @@ def main(args):
     checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
 
     loss_history = {'generator': []}
+    os.makedirs(args.save_dir, exist_ok=True)
 
     for epoch in range(args.epochs):
 
@@ -56,18 +58,20 @@ def main(args):
 
         loss_history['generator'].append(gen_loss)
 
-    os.makedirs(args.save_dir, exist_ok=True)
-
-    plot_cnn_histogram(generator=generator,
+        plot_cnn_histogram(generator=generator,
                        cnn=cnn,
                        epoch=epoch,
                        save_dir=args.save_dir,
                        labels="saved_models/CNN_L128_N10000/labels.json",
                        noise_dim=args.noise_dim)
+    
     plot_losses(loss_history=loss_history,
                 save_dir=args.save_dir)
 
     tf.keras.models.save_model(generator, args.save_dir)
+    
+    with open(args.save_dir + '/metadata.json', 'w') as outfile:
+        json.dump(vars(args), outfile,  indent=2, separators=(',', ': '))
 
 if __name__ == "__main__":
     parser = ArgumentParser()
