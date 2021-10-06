@@ -58,16 +58,16 @@ def plot_cnn_histogram(generator: Sequential,
     os.makedirs(path, exist_ok=True)
     fig.savefig(path + "generatedImages_epoch{}.png".format(epoch))
 
-def plot_losses(loss_history: Dict,
-                save_dir: str):
+def plot_losses(losses_history: Dict,
+                figure_file: str):
     
     fig, ax = plt.subplots(1, 1)
     fig.set_size_inches(10, 7)
-    ax.plot(loss_history["generator"], label='generator')
+    ax.plot(losses_history["generator_loss"], label='generator')
     ax.grid(True)
     ax.legend()
-    ax.set_title("Loss history")
-    fig.savefig(save_dir + "/loss.png")
+    ax.set_title("Generator Loss history")
+    fig.savefig(figure_file)
 
 def train_step(generator: Sequential, 
                cnn: Sequential, 

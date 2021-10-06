@@ -29,7 +29,7 @@ def main(args):
 
         for L, p in itertools.product(args.L, args.control_parameter):
 
-            print ('Generating data for L={}, p={}'.format(L, p))
+            print ('\nGenerating data for lattice size L={} and control parameter p={}\n'.format(L, p))
 
             X = np.array([percolation_configuration(L, p) for __ in range(args.samples)],dtype='float32').reshape(args.samples,L,L,1)
             path = args.path + "/L={}_p={}.npz".format(L, p)

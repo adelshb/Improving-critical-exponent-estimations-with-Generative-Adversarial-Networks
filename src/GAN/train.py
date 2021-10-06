@@ -13,7 +13,6 @@
 """Train the GAN model."""
 
 from argparse import ArgumentParser
-import time
 import os
 import json
 
@@ -22,6 +21,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # for ignoring the some of tf warnings
 
 from dcgan import make_generator_model
 from utils import *
+from logger import Logger
 
 def main(args):
 
@@ -35,12 +35,15 @@ def main(args):
     checkpoint_dir = args.save_dir + '/training_checkpoints'
     checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
 
-    loss_history = {'generator': []}
-    os.makedirs(args.save_dir, exist_ok=True)
+    logger = Logger(save_dir=args.save_dir)
+
+    #loss_history = {'generator': []}
+    #os.makedirs(args.save_dir, exist_ok=True)
 
     for epoch in range(args.epochs):
 
-        start = time.time()
+        #start = time.time()
+        logger.set_time_stamp(1)
 
         noise = tf.random.normal([args.batch_size, args.noise_dim], mean=0, stddev=1.0)
 
@@ -48,30 +51,28 @@ def main(args):
                               cnn=cnn, 
                               generator_optimizer= generator_optimizer,  
                               cross_entropy= cross_entropy, 
-                              noise= noise, 
-                              )
+                              noise= noise)
 
-        print("Epochs {}: generator loss:{:4f}, in {} sec.".format(epoch, gen_loss, time.time()-start))
+        #print("Epochs {}: generator loss:{:4f}, in {} sec.".format(epoch, gen_loss, time.time()-start))
 
         if (epoch + 1) % args.ckpt_freq == 0:
             checkpoint.save(file_prefix = checkpoint_prefix)
 
-        loss_history['generator'].append(gen_loss)
+        #loss_history['generator'].append(gen_loss)
 
-        plot_cnn_histogram(generator=generator,
-                       cnn=cnn,
-                       epoch=epoch,
-                       save_dir=args.save_dir,
-                       labels="saved_models/CNN_L128_N10000/labels.json",
-                       noise_dim=args.noise_dim)
+        logger.set_time_stamp(2)
+        logger.logs['generator_loss'].append(gen_loss)
+        logger.print_status(epoch=epoch)
+        logger.save_logs()
+        logger.generate_plots(generator=generator,
+                              cnn=cnn,
+                              epoch=epoch,
+                              labels="saved_models/CNN_L128_N10000/labels.json",
+                              noise_dim=args.noise_dim)
     
-        plot_losses(loss_history=loss_history,
-                    save_dir=args.save_dir)
-
     tf.keras.models.save_model(generator, args.save_dir)
     
-    with open(args.save_dir + '/metadata.json', 'w') as outfile:
-        json.dump(vars(args), outfile,  indent=2, separators=(',', ': '))
+    logger.save_metadata(vars(args))
 
 if __name__ == "__main__":
     parser = ArgumentParser()
