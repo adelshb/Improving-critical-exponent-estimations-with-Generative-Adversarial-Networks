@@ -10,7 +10,6 @@ from src.CNN_percolation import train
 from src.CNN_percolation.utils import make_path, time_to_string
 from src.statphy.models import percolation
 
-#====================================================================
 def main(args, print_args=True):
     
     start_time = datetime.now()
