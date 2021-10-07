@@ -1,4 +1,4 @@
-python src/CNN_percolation/main_regression.py \
-    --train_size 10 \
+python src/CNN_regression/train_regression.py \
+    --dataset_size 10 \
     --batch_size 1 \
     --epochs 2 \

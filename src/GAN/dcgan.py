@@ -13,7 +13,6 @@
 import tensorflow as tf
 from tensorflow.keras import layers
 
-
 def make_generator_model(noise_dim=100):
     
     model = tf.keras.Sequential()
