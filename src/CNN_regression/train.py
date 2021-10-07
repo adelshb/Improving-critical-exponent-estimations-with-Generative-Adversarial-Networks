@@ -17,28 +17,31 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # for ignoring the some of tf warnings
 import tensorflow as tf
 
-from src.CNN_regression.design_regression import create_model
+from src.CNN_regression.network import cnn
 from src.CNN_regression.utils import *
 
 def main(args):
 
+    # Generate the train and test datasets
     X_train, X_test, y_train, y_test = generate_data(args.dataset_size, args.lattice_size)
     
-    save_dir = os.path.join(args.odir, time_to_string(datetime.now()))
+    # Create the directory tree
+    save_dir = os.path.join(args.save_dir, datetime.now().strftime("%Y.%m.%d.%H.%M.%S"))
     os.makedirs(save_dir, exist_ok=True)
 
-    with open(make_path(save_dir, 'args.json'), 'w') as f:
-        json.dump(vars(args), f, indent=4,)
-
-    model = create_model(input_shape=(args.lattice_size, args.lattice_size, 1))
+    # Create the model, optimizer, loss function and callbacks
+    model = cnn(input_shape=(args.lattice_size, args.lattice_size, 1))
     optimizer = tf.keras.optimizers.Adam(learning_rate=args.learning_rate)
     loss = tf.keras.losses.MeanSquaredError()
-    model.compile(optimizer=optimizer, loss=loss)   
-    callbacks = define_callbacks(args)     
+    model.compile(optimizer=optimizer, loss=loss)
 
-    if args.dump_model_summary:
-        print_model_summary(model, args.save_dir)
+    callbacks = define_callbacks(args.set_lr_scheduler, 
+                                 args.set_checkpoint, 
+                                 args.set_earlystopping, 
+                                 args.set_tensorboard, 
+                                 save_dir)     
 
+    # Train the model
     history = model.fit(X_train, 
                         y_train,  
                         validation_data=(X_test, y_test), 
@@ -46,17 +49,21 @@ def main(args):
                         epochs=args.epochs,
                         batch_size=args.batch_size)
 
+    # Save a few logs
+    with open(os.path.join(save_dir, 'args.json'), 'w') as f:
+        json.dump(vars(args), f, indent=4)
+    if args.dump_model_summary:
+        print_model_summary(model, save_dir)
     if args.save_model:
-        model.save(os.path.join(save_dir, 'saved-model_regression.h5'))
-
+        model.save(os.path.join(save_dir, 'saved-model.h5'))
     if args.dump_history:
-        write_numpy_dic_to_json(history.history, os.path.join(save_dir, 'history_regression.json'))
+        write_numpy_dic_to_json(history.history, os.path.join(save_dir, 'history.json'))
 
 if __name__ == '__main__':
 
     parser = ArgumentParser()
     
-    parser.add_argument("--odir", type=str, default='./saved_models/cnn_regression')
+    parser.add_argument("--save_dir", type=str, default='./saved_models/cnn_regression')
     parser.add_argument("--lattice_size", type=int, default=128)
     parser.add_argument("--dataset_size", type=int, default=120)
     parser.add_argument("--epochs", type=int, default=10)
@@ -66,15 +73,15 @@ if __name__ == '__main__':
     
     parser.add_argument('--set_lr_scheduler', dest='set_lr_scheduler', action='store_true')
     parser.add_argument('--no-set_lr_scheduler', dest='set_lr_scheduler', action='store_false')
-    parser.set_defaults(set_lr_scheduler=False)
+    parser.set_defaults(set_lr_scheduler=True)
 
     parser.add_argument('--set_checkpoint', dest='set_checkpoint', action='store_true')
     parser.add_argument('--no-set_checkpoint', dest='set_checkpoint', action='store_false')
-    parser.set_defaults(set_checkpoint=False)
+    parser.set_defaults(set_checkpoint=True)
 
     parser.add_argument('--set_earlystopping', dest='set_earlystopping', action='store_true')
     parser.add_argument('--no-set_earlystopping', dest='set_earlystopping', action='store_false')
-    parser.set_defaults(set_earlystopping=False)
+    parser.set_defaults(set_earlystopping=True)
 
     parser.add_argument('--set_tensorboard', dest='set_tensorboard', action='store_true')
     parser.add_argument('--no-set_tensorboard', dest='set_tensorboard', action='store_false')

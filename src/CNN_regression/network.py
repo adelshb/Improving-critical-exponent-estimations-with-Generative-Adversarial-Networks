@@ -12,17 +12,15 @@
 
 import tensorflow as tf
 
-def create_model(input_shape, 
-                 n_conv_layers=4, 
-                 n_dense_layers=3, 
-                 n_neurons=512, 
-                 dropout_rate=0):
+def cnn(input_shape, 
+        n_conv_layers=4, 
+        n_dense_layers=3, 
+        n_neurons=512, 
+        dropout_rate=0):
 
-    # input layer
     i = tf.keras.layers.Input(shape=input_shape)
     x = i
 
-    # Convolution block
     for l in range(n_conv_layers):
         n_filters = 32 * (2 ** l)
         x = tf.keras.layers.Conv2D(n_filters, (3,3), activation='relu', padding='same')(x)
@@ -36,7 +34,6 @@ def create_model(input_shape,
     if dropout_rate > 0:
         x = tf.keras.layers.Dropout(dropout_rate)(x)
 
-    # Regression block
     for l in range(n_dense_layers):
         x = tf.keras.layers.Dense(n_neurons, activation='relu')(x)
         if dropout_rate > 0:
@@ -45,4 +42,3 @@ def create_model(input_shape,
     x = tf.keras.layers.Dense(1, activation='sigmoid')(x)
     model = tf.keras.models.Model(i, x)
     return model
-    

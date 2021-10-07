@@ -53,7 +53,7 @@ if __name__ == "__main__":
     parser.add_argument("--data_dir", type=str, default="./data/generated")
 
     # Model
-    parser.add_argument("--model_dir", type=str, default="./saved_models/gan")
+    parser.add_argument("--model_dir", type=str, default="./saved_models/gan_cnn")
     parser.add_argument("--noise_dim", type=int, default=100)
 
     args = parser.parse_args()

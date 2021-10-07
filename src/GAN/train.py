@@ -14,6 +14,7 @@
 
 from argparse import ArgumentParser
 import os
+from datetime import datetime
 
 import tensorflow as tf
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # for ignoring the some of tf warnings
@@ -24,6 +25,8 @@ from logger import Logger
 
 def main(args):
 
+    save_dir = os.path.join(args.save_dir, time.now().strftime("%Y.%m.%d.%H.%M.%S"))
+
     generator = make_generator_model(args.noise_dim)
     cnn = tf.keras.models.load_model(args.CNN_model_path, custom_objects={'tf': tf})
     
@@ -31,10 +34,10 @@ def main(args):
     generator_optimizer = tf.keras.optimizers.Adam(1e-3)
 
     checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer, generator=generator)
-    checkpoint_dir = args.save_dir + '/training_checkpoints'
+    checkpoint_dir = save_dir + '/training_checkpoints'
     checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
 
-    logger = Logger(save_dir=args.save_dir)
+    logger = Logger(save_dir=save_dir)
 
     for epoch in range(args.epochs):
 
@@ -61,7 +64,7 @@ def main(args):
                               labels="saved_models/CNN_L128_N10000/labels.json",
                               noise_dim=args.noise_dim)
     
-    tf.keras.models.save_model(generator, args.save_dir)
+    tf.keras.models.save_model(generator, save_dir)
     
     logger.save_metadata(vars(args))
 
@@ -72,7 +75,7 @@ if __name__ == "__main__":
     parser.add_argument("--batch_size", type=int, default=512)
     parser.add_argument("--epochs", type=int, default=200)
     parser.add_argument("--noise_dim", type=int, default=100)
-    parser.add_argument("--save_dir", type=str, default="./saved_models/gan_cnn-loss")
+    parser.add_argument("--save_dir", type=str, default="./saved_models/gan_cnn")
     parser.add_argument("--ckpt_freq", type=int, default=10)
     parser.add_argument("--CNN_model_path", type=str, default="./saved_models/CNN_L128_N10000/saved-model.h5")
 
