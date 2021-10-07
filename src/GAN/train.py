@@ -25,7 +25,7 @@ from logger import Logger
 
 def main(args):
 
-    save_dir = os.path.join(args.save_dir, time.now().strftime("%Y.%m.%d.%H.%M.%S"))
+    save_dir = os.path.join(args.save_dir, datetime.now().strftime("%Y.%m.%d.%H.%M.%S"))
 
     generator = make_generator_model(args.noise_dim)
     cnn = tf.keras.models.load_model(args.CNN_model_path, custom_objects={'tf': tf})

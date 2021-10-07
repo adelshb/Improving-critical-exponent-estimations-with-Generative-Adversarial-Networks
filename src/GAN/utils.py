@@ -76,7 +76,7 @@ def train_step(generator: Sequential,
                noise: Tensor, 
                ):
 
-    with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
+    with tf.GradientTape() as gen_tape:
         
         generated_images = generator(noise, training=True)
         gen_loss = generator_loss(cross_entropy, generated_images, cnn)
