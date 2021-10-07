@@ -14,7 +14,6 @@
 
 from argparse import ArgumentParser
 import os
-import json
 
 import tensorflow as tf
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # for ignoring the some of tf warnings
@@ -37,12 +36,8 @@ def main(args):
 
     logger = Logger(save_dir=args.save_dir)
 
-    #loss_history = {'generator': []}
-    #os.makedirs(args.save_dir, exist_ok=True)
-
     for epoch in range(args.epochs):
 
-        #start = time.time()
         logger.set_time_stamp(1)
 
         noise = tf.random.normal([args.batch_size, args.noise_dim], mean=0, stddev=1.0)
@@ -53,12 +48,8 @@ def main(args):
                               cross_entropy= cross_entropy, 
                               noise= noise)
 
-        #print("Epochs {}: generator loss:{:4f}, in {} sec.".format(epoch, gen_loss, time.time()-start))
-
         if (epoch + 1) % args.ckpt_freq == 0:
             checkpoint.save(file_prefix = checkpoint_prefix)
-
-        #loss_history['generator'].append(gen_loss)
 
         logger.set_time_stamp(2)
         logger.logs['generator_loss'].append(gen_loss)
@@ -75,20 +66,14 @@ def main(args):
     logger.save_metadata(vars(args))
 
 if __name__ == "__main__":
+
     parser = ArgumentParser()
 
-    # Data
-    # parser.add_argument("--data_path", type=str, default="./data/simulation/L=128_p=0.5928.npz")
-
-    # Training parameters
     parser.add_argument("--batch_size", type=int, default=512)
     parser.add_argument("--epochs", type=int, default=200)
     parser.add_argument("--noise_dim", type=int, default=100)
-
-    # Save model
     parser.add_argument("--save_dir", type=str, default="./saved_models/gan_cnn-loss")
     parser.add_argument("--ckpt_freq", type=int, default=10)
-    
     parser.add_argument("--CNN_model_path", type=str, default="./saved_models/CNN_L128_N10000/saved-model.h5")
 
     args = parser.parse_args()
