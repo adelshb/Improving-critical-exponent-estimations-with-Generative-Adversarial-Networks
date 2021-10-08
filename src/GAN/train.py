@@ -13,23 +13,33 @@
 """Train the GAN model."""
 
 from argparse import ArgumentParser
-import time
-import matplotlib.pyplot as plt
-import numpy as np
 import os
+from datetime import datetime
 
 import tensorflow as tf
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # for ignoring the some of tf warnings
 
-from dcgan import make_generator_model, make_discriminator_model
+from dcgan import make_generator_model
 from utils import *
+from logger import Logger
 
 def main(args):
 
-    with np.load(args.data_path) as data:
-        train_images = data['arr_0']
-    train_dataset = tf.data.Dataset.from_tensor_slices(train_images).batch(args.batch_size)
+    save_dir = os.path.join(args.save_dir, datetime.now().strftime("%Y.%m.%d.%H.%M.%S"))
 
+    generator = make_generator_model(args.noise_dim)
+    cnn = tf.keras.models.load_model(args.CNN_model_path, custom_objects={'tf': tf})
+    
+    cross_entropy = tf.keras.losses.SparseCategoricalCrossentropy()
+    generator_optimizer = tf.keras.optimizers.Adam(1e-3)
+
+    checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer, generator=generator)
+    checkpoint_dir = save_dir + '/training_checkpoints'
+    checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
+
+    logger = Logger(save_dir=save_dir)
+
+"""    
     generator = make_generator_model()
     discriminator = make_discriminator_model()
     cnn = tf.keras.models.load_model(args.CNN_model_path, custom_objects={'tf': tf})
@@ -53,11 +63,39 @@ def main(args):
     loss_history = {"discriminator": [], "generator": [], "cnn": []}
 
     for epoch in range(args.epochs):
+"""
 
-        start = time.time()
-        for image_batch in train_dataset:
 
-            gen_loss, disc_loss, cnn_loss = train_step(images=image_batch, 
+    for epoch in range(args.epochs):
+
+        logger.set_time_stamp(1)
+
+        noise = tf.random.normal([args.batch_size, args.noise_dim], mean=0, stddev=1.0)
+
+        gen_loss = train_step(generator= generator, 
+                              cnn=cnn, 
+                              generator_optimizer= generator_optimizer,  
+                              cross_entropy= cross_entropy, 
+                              noise= noise)
+
+        if (epoch + 1) % args.ckpt_freq == 0:
+            checkpoint.save(file_prefix = checkpoint_prefix)
+
+        logger.set_time_stamp(2)
+        logger.logs['generator_loss'].append(gen_loss)
+        logger.print_status(epoch=epoch)
+        logger.save_logs()
+        logger.generate_plots(generator=generator,
+                              cnn=cnn,
+                              epoch=epoch,
+                              labels="saved_models/CNN_L128_N10000/labels.json",
+                              noise_dim=args.noise_dim)
+    
+    tf.keras.models.save_model(generator, save_dir)
+    
+    logger.save_metadata(vars(args))
+
+"""            gen_loss, disc_loss, cnn_loss = train_step(images=image_batch, 
                                                        generator=generator, 
                                                        discriminator=discriminator, 
                                                        cnn=cnn,
@@ -91,26 +129,35 @@ def main(args):
                            noise_dim=args.noise_dim)
 
     tf.keras.models.save_model(generator, args.save_dir)
+    """
+
 
 if __name__ == "__main__":
+
+
     parser = ArgumentParser()
 
     # Data
-    parser.add_argument("--data_path", type=str, default="./data/simulation/L=128_p=0.5928.npz")
-    parser.add_argument("--CNN_model_path", type=str, default="./saved_models/CNN_L128_N10000/saved-model.h5")
+    #parser.add_argument("--data_path", type=str, default="./data/simulation/L=128_p=0.5928.npz")
+    #parser.add_argument("--CNN_model_path", type=str, default="./saved_models/CNN_L128_N10000/saved-model.h5")
 
-    # Training parameters
-    parser.add_argument("--batch_size", type=int, default=50)
+    parser.add_argument("--batch_size", type=int, default=512)
     parser.add_argument("--epochs", type=int, default=200)
     parser.add_argument("--noise_dim", type=int, default=100)
-    parser.add_argument("--input_noise_stddev", type=float, default=0.3)
-    parser.add_argument("--label_smoothing_real", type=float, default=0.1)
-    parser.add_argument("--label_smoothing_fake", type=float, default=0)
-    parser.add_argument("--waiting", type=int, default=2)
+
+    parser.add_argument("--save_dir", type=str, default="./saved_models/gan_cnn")
+    parser.add_argument("--ckpt_freq", type=int, default=10)
+    parser.add_argument("--CNN_model_path", type=str, default="./saved_models/CNN_L128_N10000/saved-model.h5")
+
+    #parser.add_argument("--input_noise_stddev", type=float, default=0.3)
+    #parser.add_argument("--label_smoothing_real", type=float, default=0.1)
+    #parser.add_argument("--label_smoothing_fake", type=float, default=0)
+    #parser.add_argument("--waiting", type=int, default=2)
 
     # Save model
-    parser.add_argument("--save_dir", type=str, default="./data/models/gan")
-    parser.add_argument("--save_ckpt", type=int, default=20)
+    #parser.add_argument("--save_dir", type=str, default="./data/models/gan")
+    #parser.add_argument("--save_ckpt", type=int, default=20)
+
 
     args = parser.parse_args()
     main(args)

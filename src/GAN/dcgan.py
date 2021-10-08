@@ -13,11 +13,10 @@
 import tensorflow as tf
 from tensorflow.keras import layers
 
-
-def make_generator_model():
+def make_generator_model(noise_dim=100):
     
     model = tf.keras.Sequential()
-    model.add(layers.Dense(2*2*256, use_bias=False, input_shape=(100,)))
+    model.add(layers.Dense(2*2*256, use_bias=False, input_shape=(noise_dim,)))
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
@@ -134,4 +133,3 @@ def make_discriminator_model(dropout_rate=0.0):
     model.add(layers.Dense(1))
 
     return model
-
