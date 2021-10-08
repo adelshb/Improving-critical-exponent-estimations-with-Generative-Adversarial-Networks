@@ -56,14 +56,14 @@ def main(args):
 
         logger.set_time_stamp(2)
         logger.logs['generator_loss'].append(gen_loss)
-        logger.print_status(epoch=epoch)
         logger.save_logs()
         logger.generate_plots(generator=generator,
                               cnn=cnn,
                               epoch=epoch,
                               labels="saved_models/CNN_L128_N10000/labels.json",
                               noise_dim=args.noise_dim)
-    
+        logger.print_status(epoch=epoch)
+
     tf.keras.models.save_model(generator, save_dir)
     
     logger.save_metadata(vars(args))

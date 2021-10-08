@@ -79,6 +79,8 @@ class Logger():
                        epoch: int,
                        labels: str = "saved_models/CNN_L128_N10000/labels.json",
                        noise_dim: int = 100,
+                       bins_number: int = 100,
+                       test_size: int = 10000
                        ) -> None:
         """Call a helper function to plot the generator loss and the histogram."""
             
@@ -89,8 +91,9 @@ class Logger():
                            cnn=cnn,
                            epoch=epoch,
                            save_dir=self.save_dir_plots,
-                           labels=labels,
-                           noise_dim=noise_dim)
+                           noise_dim=noise_dim,
+                           bins_number=bins_number,
+                           test_size=test_size)
         
     def save_metadata(self,
                       args: Dict,
