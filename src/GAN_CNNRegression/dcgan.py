@@ -74,12 +74,6 @@ def make_generator_model(noise_dim=100):
     model.add(layers.LeakyReLU())
     
     model.add(layers.Conv2DTranspose(1, (3, 3), strides=(2, 2), padding='same', use_bias=False, activation='tanh'))
-        
-    #def sign_fct(x):
-    #    import tensorflow as tf
-    #    return tf.sign(x)
-    #    
-    #model.add(layers.Lambda(lambda x: sign_fct(x)))
-    #assert model.output_shape == (None, 128, 128, 1)
+    assert model.output_shape == (None, 128, 128, 1)
 
     return model

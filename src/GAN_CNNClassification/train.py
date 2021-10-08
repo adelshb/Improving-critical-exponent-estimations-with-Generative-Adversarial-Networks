@@ -75,7 +75,6 @@ if __name__ == "__main__":
     parser.add_argument("--batch_size", type=int, default=512)
     parser.add_argument("--epochs", type=int, default=200)
     parser.add_argument("--noise_dim", type=int, default=100)
-
     parser.add_argument("--save_dir", type=str, default="./saved_models/gan_cnn_classification")
     parser.add_argument("--ckpt_freq", type=int, default=10)
     parser.add_argument("--CNN_model_path", type=str, default="./saved_models/CNN_L128_N10000/saved-model.h5")
