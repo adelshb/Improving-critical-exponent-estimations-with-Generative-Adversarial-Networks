@@ -40,21 +40,25 @@ def plot_cnn_histogram(generator: Sequential,
                        save_dir: str,
                        noise_dim: int = 100,
                        bins_number: int = 100,
-                       test_size: int = 10000,
                        ):
-    
+    test_size = bins_number**2
     noise = tf.random.normal([test_size, noise_dim])
+    
     images = generator(noise, training=False)
     images = tf.sign(images)
 
     y_pred = cnn.predict(images)
-   
+
     fig, ax = plt.subplots(1, 1)
-    ax.hist(y_pred, bins=bins_number, color='b')
+    ax.hist(y_pred, bins=bins_number, color='g')
     ax.set_title("Distribution of the value of p for GAN generated critical configurations")
-    path = os.path.join(save_dir, "histograms/")
+    ax.set_xlabel("Control parameter p")
+    ax.set_ylabel("Fraction of configurations")
+    ax.set_xlim(0, 1)
+    
+    path = os.path.join(save_dir, "histograms")
     os.makedirs(path, exist_ok=True)
-    fig.savefig(path + "generatedImages_epoch{}.png".format(epoch))
+    fig.savefig(os.path.join(path, "generatedImages_epoch{}.png".format(epoch)))
 
 def plot_losses(losses_history: Dict,
                 figure_file: str):
