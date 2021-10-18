@@ -30,9 +30,13 @@ def main(args):
     os.makedirs(save_dir, exist_ok=True)
 
     # Create the model, optimizer, loss function and callbacks
-    model = cnn(input_shape=(args.lattice_size, args.lattice_size, 1))
+    model = cnn(input_shape=(args.lattice_size, args.lattice_size, 1), 
+                n_conv_layers=4,
+                n_dense_layers=3,
+                n_neurons=512)
+
     optimizer = tf.keras.optimizers.Adam(learning_rate=args.learning_rate)
-    loss = tf.keras.losses.MeanSquaredError()
+    loss = tf.keras.losses.MeanAbsoluteError()
     model.compile(optimizer=optimizer, loss=loss)
 
     callbacks = define_callbacks(args.set_lr_scheduler, 
@@ -81,7 +85,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--set_earlystopping', dest='set_earlystopping', action='store_true')
     parser.add_argument('--no-set_earlystopping', dest='set_earlystopping', action='store_false')
-    parser.set_defaults(set_earlystopping=True)
+    parser.set_defaults(set_earlystopping=False)
 
     parser.add_argument('--set_tensorboard', dest='set_tensorboard', action='store_true')
     parser.add_argument('--no-set_tensorboard', dest='set_tensorboard', action='store_false')
