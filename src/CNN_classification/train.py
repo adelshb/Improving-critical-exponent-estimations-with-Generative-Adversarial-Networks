@@ -6,8 +6,8 @@ import tensorflow as tf
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
 from sklearn.model_selection import train_test_split
 
-from src.CNN_percolation import design
-from src.CNN_percolation import utils
+from src.CNN_classification import network
+from src.CNN_classification import utils
 
 def train(X, y,
           random_state=42,
@@ -34,7 +34,7 @@ def train(X, y,
     K = len(np.unique(y_train))  
     
     # design the architecture of model
-    model = design.create_model((L, L, 1), K, dropout_rate=dropout_rate)
+    model = network.create_model((L, L, 1), K, dropout_rate=dropout_rate)
 
     # compile the model            
     opt = tf.keras.optimizers.Adam(learning_rate=1e-4)
