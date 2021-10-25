@@ -6,8 +6,8 @@ from datetime import datetime
 import numpy as np
 import tensorflow as tf
 
-from src.CNN_percolation import train
-from src.CNN_percolation.utils import make_path, time_to_string
+from src.CNN_classification import train
+from src.CNN_classification.utils import make_path, time_to_string
 from src.statphy.models import percolation
 
 #====================================================================
