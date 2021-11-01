@@ -47,9 +47,13 @@ class Logger():
         
         self.logs: dict = {}
         self.logs['generator_loss'] = []
+        self.logs['generator_reg'] = []
+        self.logs['generator_signed_loss'] = []
+        self.logs['val_loss'] = []
+        self.logs['val_pred_mean'] = []
+        self.logs['val_pred_stddev'] = []
         
         self.time_stamp = [0, 0]
-        self.initial_value_portfolio = None
             
     def set_time_stamp(self,
                        i: int,
@@ -63,33 +67,53 @@ class Logger():
                      ) -> None:
         """Method to print on the status of the run on the standard output"""
         
-        print('    - Episode: {:<13d} | Generator loss: {:<13.2f} | Duration in seconds: {:<13.2f}'.format(epoch, 
-                                                                                              self.logs["generator_loss"][-1], 
-                                                                                              self.time_stamp[1]-self.time_stamp[0]))
-    
+        print('    - Episode: {:<13d} | Generator loss: {:<13.4f} | Generator reg: {:<13.4f} | Generator signed loss: {:<13.4f} | Duration in seconds: {:<13.2f}'.format(epoch, 
+                            self.logs["generator_loss"][-1],
+                            self.logs["generator_reg"][-1],  
+                            self.logs['val_loss'][-1], 
+                            self.time_stamp[1]-self.time_stamp[0])
+                            )
+
     def save_logs(self) -> None:
         """Saves all the necessary logs to 'save_dir_logs' directory."""
         
         generator_loss_array = np.array(self.logs['generator_loss'])
         np.save(os.path.join(self.save_dir_logs, "generator_loss.npy"), generator_loss_array)
+
+        generator_reg_array = np.array(self.logs['generator_reg'])
+        np.save(os.path.join(self.save_dir_logs, "generator_reg.npy"), generator_reg_array)
+
+        generator_signed_loss_array = np.array(self.logs['generator_signed_loss'])
+        np.save(os.path.join(self.save_dir_logs, "generator_signed_loss.npy"), generator_signed_loss_array)
+
+        val_loss_array = np.array(self.logs['val_loss'])
+        np.save(os.path.join(self.save_dir_logs, "val_loss.npy"), val_loss_array)
+
+        val_pred_mean_array = np.array(self.logs['val_pred_mean'])
+        np.save(os.path.join(self.save_dir_logs, "val_pred_mean.npy"), val_pred_mean_array)
+
+        val_pred_stddev_array = np.array(self.logs['val_pred_stddev'])
+        np.save(os.path.join(self.save_dir_logs, "val_pred_stddev.npy"), val_pred_stddev_array)
         
     def generate_plots(self,
                        generator: Sequential,
                        cnn: Sequential,
                        epoch: int,
-                       labels: str = "saved_models/CNN_L128_N10000/labels.json",
-                       noise_dim: int = 100) -> None:
+                       noise_dim: int = 100,
+                       bins_number: int = 100,
+                       ) -> None:
+
         """Call a helper function to plot the generator loss and the histogram."""
             
         plot_losses(losses_history=self.logs, 
                     figure_file=os.path.join(self.save_dir_plots, "generatorLoss"))
 
-        plot_cnn_histogram(generator=generator,
-                           cnn=cnn,
-                           epoch=epoch,
-                           save_dir=self.save_dir_plots,
-                           labels=labels,
-                           noise_dim=noise_dim)
+        plot_cnn_histogram(generator = generator,
+                           cnn = cnn,
+                           epoch = epoch,
+                           save_dir = self.save_dir_plots,
+                           noise_dim = noise_dim,
+                           bins_number = bins_number)
         
     def save_metadata(self,
                       args: Dict,
@@ -98,4 +122,3 @@ class Logger():
 
         with open(os.path.join(self.save_dir, 'metadata.json'), 'w') as outfile:
             json.dump(args, outfile,  indent=2, separators=(',', ': '))
-        
