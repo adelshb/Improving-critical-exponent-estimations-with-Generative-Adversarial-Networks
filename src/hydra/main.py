@@ -34,19 +34,26 @@ def main(args, logger_plots = False):
     tbw_cnn = tf.summary.create_file_writer(save_dir + "/tensorboard/cnn_loss")
     tbw_gen_dis = tf.summary.create_file_writer(save_dir + "/tensorboard/gen_dis_dis")
     tbw_dis = tf.summary.create_file_writer(save_dir + "/tensorboard/dis_loss")
+    tbw_dis = tf.summary.create_file_writer(save_dir + "/tensorboard/dis_loss")
+    tbw_val_loss = tf.summary.create_file_writer(save_dir + "/tensorboard/val_loss")
+    tbw_val_pred_mean = tf.summary.create_file_writer(save_dir + "/tensorboard/val_pred_mean")
+    tbw_val_pred_stddev = tf.summary.create_file_writer(save_dir + "/tensorboard/val_pred_stddev")
+    tbw_max_pred = tf.summary.create_file_writer(save_dir + "/tensorboard/max_pred")
+    tbw_min_pred = tf.summary.create_file_writer(save_dir + "/tensorboard/min_pred")
     print("Tensorboard command line: {}".format("tensorboard --logdir " + save_dir + "/tensorboard"))
 
     generator = Generator(args.noise_dim)
     generator_optimizer = tf.keras.optimizers.Adam(args.lr)
     discriminator = Discriminator()
     discriminator_optimizer = tf.keras.optimizers.Adam(args.lr)
+    cnn = tf.keras.models.load_model(args.CNN_model_path)
 
     hydra = Hydra(generator = generator,
                 generator_optimizer = generator_optimizer,
                 discriminator = discriminator,
                 discriminator_optimizer = discriminator_optimizer,
                 discriminator_loss = tf.keras.losses.BinaryCrossentropy(),
-                cnn = tf.keras.models.load_model(args.CNN_model_path),
+                cnn = cnn,
                 cnn_loss = tf.keras.losses.MeanAbsoluteError(),
                 targeted_parameter = args.crit_parameter
                 )
@@ -60,11 +67,11 @@ def main(args, logger_plots = False):
     checkpoint_dir = os.path.join(save_dir, 'training_checkpoints')
     checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
 
-    # logger = Logger(save_dir=save_dir)
+    logger = Logger(save_dir=save_dir)
 
     for epoch in range(args.epochs):
 
-        # logger.set_time_stamp(1)
+        logger.set_time_stamp(1)
 
         noise = tf.random.normal([args.batch_size, args.noise_dim], mean=args.noise_mean, stddev=args.noise_std)
 
@@ -73,10 +80,14 @@ def main(args, logger_plots = False):
 
         # Training the generator
         loss = hydra.train_generator_step(noise = noise, l_cnn=1, l_dis=1)
-
         loss["discriminator_loss"] = d_loss
 
-        print(loss)
+        vals = hydra.val_cnn_stats(error_function = tf.keras.losses.MeanAbsoluteError(),
+                                    noise_dim=args.noise_dim,
+                                    test_size=1000,
+                                    noise_mean= args.noise_mean,
+                                    noise_stddev= args.noise_std
+                                    )
             
         with tbw_cnn.as_default():
             tf.summary.scalar("Loss", loss['cnn_loss'], step=epoch)
@@ -84,29 +95,29 @@ def main(args, logger_plots = False):
             tf.summary.scalar("Loss", loss['generator_dis_loss'], step=epoch)
         with tbw_dis.as_default():
             tf.summary.scalar("Loss", loss['discriminator_loss'], step=epoch)
-        
-        # if (epoch + 1) % args.ckpt_freq == 0:
-        #     checkpoint.save(file_prefix= checkpoint_prefix)
+        with tbw_val_loss.as_default():
+            tf.summary.scalar("Loss", vals['val_loss'], step=epoch)
+        with tbw_val_pred_mean.as_default():
+            tf.summary.scalar("Test Prediction", vals['val_mean_pred'], step=epoch)
+        with tbw_max_pred.as_default():
+            tf.summary.scalar("Test Prediction", vals['max_pred'], step=epoch)
+        with tbw_min_pred.as_default():
+            tf.summary.scalar("Test Prediction", vals['min_pred'], step=epoch)
+        with tbw_val_pred_stddev.as_default():
+            tf.summary.scalar("stddev Test Prediction", vals['val_stddev'], step=epoch)
 
-    #     logger.set_time_stamp(2)
-    #     logger.logs['generator_loss'].append(gen_loss)
-    #     logger.logs['generator_reg'].append(gen_reg)
-    #     logger.logs['generator_signed_loss'].append(gen_signed_loss)
-    #     logger.logs['val_loss'].append(val_loss)
-    #     logger.logs['val_pred_mean'].append(val_mean_pred)
-    #     logger.logs['val_pred_stddev'].append(val_stddev)
-    #     logger.save_logs()
+        if (epoch + 1) % args.ckpt_freq == 0:
+            checkpoint.save(file_prefix= checkpoint_prefix)
 
-    #     if logger_plots == True:
-    #         logger.generate_plots(generator= generator,
-    #                             cnn= cnn,
-    #                             epoch= epoch,
-    #                             noise_dim= args.noise_dim,
-    #                             bins_number= args.bins_number)
-    #     logger.print_status(epoch=epoch)
+        logger.set_time_stamp(2)
+        logger.update_logs({**loss, **vals})
 
-    # tf.keras.models.save_model(generator, save_dir)
-    # logger.save_metadata(vars(args))
+        logger.print_status(epoch=epoch)
+
+    logger.save_logs()
+    tf.keras.models.save_model(generator, save_dir)
+    tf.keras.models.save_model(discriminator, save_dir)
+    logger.save_metadata(vars(args))
 
 if __name__ == "__main__":
 
@@ -119,7 +130,7 @@ if __name__ == "__main__":
 
     # Training parameters
     parser.add_argument("--batch_size", type=int, default=256)
-    parser.add_argument("--epochs", type=int, default=10)
+    parser.add_argument("--epochs", type=int, default=100)
     parser.add_argument("--reg_coeff", type=float, default=1.0)
     parser.add_argument("--lr", type=float, default=1e-3)
 

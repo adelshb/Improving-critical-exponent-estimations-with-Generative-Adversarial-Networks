@@ -144,8 +144,8 @@ class Hydra():
             generated_images = self.generator(noise, training=False)
 
             # Compute the losses
-            fake_loss = self.loss(self.discriminator, self.discriminator_loss, generated_images, targeted_parameter= 1)
-            real_loss = self.loss(self.discriminator, self.discriminator_loss, real_images, targeted_parameter=0)
+            fake_loss = self.loss(self.discriminator, self.discriminator_loss, generated_images, targeted_parameter=0)
+            real_loss = self.loss(self.discriminator, self.discriminator_loss, real_images, targeted_parameter=1)
             loss = 0.5 * (fake_loss + real_loss)
 
         # Compute gradient and new weights
@@ -153,3 +153,40 @@ class Hydra():
         self.discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, self.discriminator.trainable_variables))
 
         return loss
+
+    def val_cnn_stats(self,
+            error_function = tf.keras.losses.MeanAbsoluteError(),
+            noise_dim: int = 100,
+            test_size: int = 1000,
+            noise_mean: Optional[float] = 0,
+            noise_stddev: Optional[float] = 1.0,
+            ):
+        r"""
+        Compute statics on a CNN model evaluation on the generated data.
+        Args:
+            loss_function: Function used to evaluate the images
+            noise_dim: Noise iput size of the Generator
+            test_size: Number of generated images used to collect statistics.
+            noise_mean: Noise input mean
+            noise_stddev: Noise inmput standard deviation.
+        Return:
+            Different statistically relevant values.
+        """
+
+        noise = tf.random.normal([test_size, noise_dim], mean=noise_mean, stddev=noise_stddev) 
+        images = self.generator(noise, training=False)
+        images = tf.sign(images)
+
+        y_pred = self.cnn.predict(images)
+        mean = tf.math.reduce_mean(y_pred)
+        stddev = tf.math.reduce_std(y_pred)
+
+        wanted_output = tf.fill(y_pred.shape, self.targeted_parameter)
+        loss = error_function(wanted_output, y_pred)
+
+        return {'val_loss':loss, 
+                'val_mean_pred':mean, 
+                'max_pred':tf.math.reduce_max(y_pred), 
+                'min_pred':tf.math.reduce_min(y_pred), 
+                'val_stddev':stddev
+            }
