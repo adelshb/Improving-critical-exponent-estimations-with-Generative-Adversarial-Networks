@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Written by Matthieu Sarkis, https://github.com/MatthieuSarkis
+# Written by Adel Sohbi, https://github.com/adelshb.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -13,7 +13,7 @@
 import tensorflow as tf
 from tensorflow.keras import layers
 
-def make_generator_model(noise_dim=100):
+def Generator(noise_dim: int = 100):
     
     model = tf.keras.Sequential()
     model.add(layers.Dense(2*2*256, use_bias=False, input_shape=(noise_dim,)))

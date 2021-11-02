@@ -17,6 +17,20 @@ import time
 from tensorflow.keras import Sequential
 from typing import Dict
 
+import numpy as np
+import json
+import os
+
+from typing import Dict, Optional
+
+import tensorflow as tf
+from tensorflow import Tensor
+from tensorflow.keras import Sequential
+from tensorflow.keras.losses import Loss
+from tensorflow.keras.optimizers import Optimizer
+
+import matplotlib.pyplot as plt
+
 from utils import (
     plot_cnn_histogram, 
     plot_losses,
@@ -122,3 +136,85 @@ class Logger():
 
         with open(os.path.join(self.save_dir, 'metadata.json'), 'w') as outfile:
             json.dump(args, outfile,  indent=2, separators=(',', ': '))
+
+    def val_pred_loss(generator: Sequential,
+            cnn: Sequential,
+            loss_function = tf.keras.losses.MeanAbsoluteError(),
+            wanted_output: float = 0.5928,
+            noise_dim: int = 100,
+            test_size: int = 1000,
+            noise_mean: Optional[float] = 0,
+            noise_stddev: Optional[float] = 1.0,
+            ):
+
+        noise = tf.random.normal([test_size, noise_dim], mean=noise_mean, stddev=noise_stddev) 
+        images = generator(noise, training=False)
+        images = tf.sign(images)
+
+        y_pred = cnn.predict(images)
+        mean = tf.math.reduce_mean(y_pred)
+        stddev = tf.math.reduce_std(y_pred)
+
+        wanted_output = np.full(images.shape[0], 0.5928, dtype=float)
+        loss = loss_function(wanted_output, y_pred)
+
+        return loss, mean, stddev
+
+    def plot_cnn_histogram(generator: Sequential,
+                        cnn: Sequential,
+                        epoch: int,
+                        save_dir: str,
+                        noise_dim: int = 100,
+                        bins_number: int = 100,
+                        noise_mean: Optional[float] = 0,
+                        noise_stddev: Optional[float] = 1.0,
+                        ):
+
+        test_size = bins_number**2
+        noise = tf.random.normal([test_size, noise_dim], mean=noise_mean, stddev=noise_stddev)
+        
+        images = generator(noise, training=False)
+        images = tf.sign(images)
+
+        y_pred = cnn.predict(images)
+
+        fig, ax = plt.subplots(1, 1)
+        ax.hist(y_pred, bins=bins_number, color='g')
+        ax.set_title("Distribution of the value of p for GAN generated critical configurations")
+        ax.set_xlabel("Control parameter p")
+        ax.set_ylabel("Fraction of configurations")
+        ax.set_xlim(0, 1)
+        
+        path = os.path.join(save_dir, "histograms")
+        os.makedirs(path, exist_ok=True)
+        fig.savefig(os.path.join(path, "generatedImages_epoch{}.png".format(epoch)))
+        plt.close(fig)
+
+    def plot_losses(losses_history: Dict,
+                    figure_file: str):
+        
+        fig, ax = plt.subplots(1, 1)
+        fig.set_size_inches(10, 7)
+        ax.plot(losses_history["generator_loss"], label='generator')
+        ax.grid(True)
+        ax.legend()
+        ax.set_title("Generator Loss history")
+        fig.savefig(figure_file)
+        plt.close(fig)
+
+    def read_npy_file(item):
+        data = np.load(item)
+        return data.reshape(128,128,1).astype(np.float32)
+
+    def generate_and_save_images(model, epoch, test_input):
+    predictions = model(test_input, training=False)
+
+    fig = plt.figure(figsize=(4, 4))
+
+    for i in range(predictions.shape[0]):
+        plt.subplot(4, 4, i+1)
+        plt.imshow(predictions[i, :, :, 0] * 127.5 + 127.5, cmap='gray')
+        plt.axis('off')
+
+    plt.savefig('./data/generated/image_at_epoch_{:04d}.png'.format(epoch))
+    #plt.show()
