@@ -27,7 +27,7 @@ from src.statphy.models.percolation import percolation_configuration
 
 from logger import Logger
 
-def main(args, logger_plots = False):
+def main(args):
 
     save_dir = os.path.join(args.save_dir, datetime.now().strftime("%Y.%m.%d.%H.%M.%S"))
 
@@ -52,7 +52,7 @@ def main(args, logger_plots = False):
                 generator_optimizer = generator_optimizer,
                 discriminator = discriminator,
                 discriminator_optimizer = discriminator_optimizer,
-                discriminator_loss = tf.keras.losses.BinaryCrossentropy(),
+                discriminator_loss = tf.keras.losses.BinaryCrossentropy(from_logits=True),
                 cnn = cnn,
                 cnn_loss = tf.keras.losses.MeanAbsoluteError(),
                 targeted_parameter = args.crit_parameter
@@ -75,12 +75,14 @@ def main(args, logger_plots = False):
 
         noise = tf.random.normal([args.batch_size, args.noise_dim], mean=args.noise_mean, stddev=args.noise_std)
 
-        # Training the discriminator
-        d_loss = hydra.train_discriminator_step(noise = noise, real_images= real_images)
+        loss = hydra.train_step(noise = noise, real_images= real_images, l_cnn=100, l_dis=1)
 
-        # Training the generator
-        loss = hydra.train_generator_step(noise = noise, l_cnn=1, l_dis=1)
-        loss["discriminator_loss"] = d_loss
+        # Training the discriminator
+        # d_loss = hydra.train_discriminator_step(noise = noise, real_images= real_images)
+
+        # # Training the generator
+        # loss = hydra.train_generator_step(noise = noise, l_cnn=1, l_dis=1)
+        # loss["discriminator_loss"] = d_loss
 
         vals = hydra.val_cnn_stats(error_function = tf.keras.losses.MeanAbsoluteError(),
                                     noise_dim=args.noise_dim,
@@ -136,7 +138,6 @@ if __name__ == "__main__":
 
     # Evaluation parameters
     parser.add_argument("--CNN_model_path", type=str, default="./saved_models/cnn/saved-model.h5")
-    parser.add_argument("--bins_number", type=int, default=100)
     parser.add_argument("--crit_parameter", type=float, default=0.5928)
     parser.add_argument("--lattice_size", type=int, default=128)
     

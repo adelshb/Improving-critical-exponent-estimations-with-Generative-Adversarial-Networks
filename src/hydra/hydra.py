@@ -94,65 +94,49 @@ class Hydra():
 
         return reg / (shape[0]*shape[1]*shape[2])
 
-    def train_generator_step(self,
-                            noise: Tensor,
-                            l_cnn: Optional[float] = 1,
-                            l_dis: Optional[float] = 1,
-                            ) -> Dict[str,float]:
-
+    def train_step(self,
+            noise: Tensor,
+            real_images: Tensor,
+            l_cnn: Optional[float] = 1,
+            l_dis: Optional[float] = 1,
+            ) -> Dict[str,float]:
         r"""
         Args:
             noise: Noise input for the Generator.
+            real_images: Tensor of real images.
             l_cnn: Coefficient of the cnn loss in the total generator loss.
             l_dis: Coefficient of the discriminator loss in the total generator loss.
         Return:
             a dictionary containning both losses.
         """
 
-        with tf.GradientTape() as gen_tape:
+        with tf.GradientTape() as gen_tape, tf.GradientTape() as dis_tape:
 
             # Generate images from input noise
             generated_images = self.generator(noise, training=True)
 
             # Compute the losses
             cnn_loss = self.loss(self.cnn, self.cnn_loss, generated_images, targeted_parameter= self.targeted_parameter)
+            
             discriminator_loss = self.loss(self.discriminator, self.discriminator_loss, generated_images, targeted_parameter=1)
-            loss = l_cnn * cnn_loss + l_dis * discriminator_loss
+            gen_loss = l_cnn * cnn_loss + l_dis * discriminator_loss
 
-        # Compute gradient and new weights
-        gradients_of_generator = gen_tape.gradient(loss, self.generator.trainable_variables)
-        self.generator_optimizer.apply_gradients(zip(gradients_of_generator, self.generator.trainable_variables))
-
-        return {"cnn_loss": cnn_loss, "generator_dis_loss": discriminator_loss}
-
-    def train_discriminator_step(self,
-                            noise: Tensor,
-                            real_images: Tensor
-                            ) -> float:
-
-        r"""
-        Args:
-            noise: Noise input for the Generator.
-            real_images: Tensor of real images
-        Return:
-            The loss value.
-        """
-
-        with tf.GradientTape() as dis_tape:
-
-            # Generate images from input noise
-            generated_images = self.generator(noise, training=False)
-
-            # Compute the losses
             fake_loss = self.loss(self.discriminator, self.discriminator_loss, generated_images, targeted_parameter=0)
             real_loss = self.loss(self.discriminator, self.discriminator_loss, real_images, targeted_parameter=1)
-            loss = 0.5 * (fake_loss + real_loss)
+            dis_loss = 0.5 * (fake_loss + real_loss)
 
         # Compute gradient and new weights
-        gradients_of_discriminator = dis_tape.gradient(loss, self.discriminator.trainable_variables)
+        gradients_of_discriminator = dis_tape.gradient(dis_loss, self.discriminator.trainable_variables)
         self.discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, self.discriminator.trainable_variables))
 
-        return loss
+        # Compute gradient and new weights
+        gradients_of_generator = gen_tape.gradient(gen_loss, self.generator.trainable_variables)
+        self.generator_optimizer.apply_gradients(zip(gradients_of_generator, self.generator.trainable_variables))
+
+        return {"cnn_loss": cnn_loss, "generator_dis_loss": discriminator_loss, "discriminator_loss": dis_loss}
+
+    # def train_discriminator_step(self,
+    #                         noise: Tensor,
 
     def val_cnn_stats(self,
             error_function = tf.keras.losses.MeanAbsoluteError(),

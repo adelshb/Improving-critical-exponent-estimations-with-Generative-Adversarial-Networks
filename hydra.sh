@@ -1,0 +1,13 @@
+python src/hydra/main.py  \
+    --noise_dim 100 \
+    --noise_mean 0.0 \
+    --noise_std 1.0 \
+    --batch_size 256 \
+    --epochs 100 \
+    --reg_coeff 1.0 \
+    --lr 1e-3 \
+    --CNN_model_path "./saved_models/cnn/saved-model.h5" \
+    --crit_parameter 0.5928 \
+    --lattice_size 128 \
+    --save_dir "./saved_models/hydra" \
+    --ckpt_freq 10 
