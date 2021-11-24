@@ -75,14 +75,7 @@ def main(args):
 
         noise = tf.random.normal([args.batch_size, args.noise_dim], mean=args.noise_mean, stddev=args.noise_std)
 
-        loss = hydra.train_step(noise = noise, real_images= real_images, l_cnn=100, l_dis=1)
-
-        # Training the discriminator
-        # d_loss = hydra.train_discriminator_step(noise = noise, real_images= real_images)
-
-        # # Training the generator
-        # loss = hydra.train_generator_step(noise = noise, l_cnn=1, l_dis=1)
-        # loss["discriminator_loss"] = d_loss
+        loss = hydra.train_step(noise = noise, real_images= real_images, l_cnn=1, l_dis=1)
 
         vals = hydra.val_cnn_stats(error_function = tf.keras.losses.MeanAbsoluteError(),
                                     noise_dim=args.noise_dim,
