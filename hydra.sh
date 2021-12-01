@@ -1,7 +1,7 @@
-python src/hydra/main.py  \
+python src/hydra/train.py  \
     --noise_dim 100 \
     --noise_mean 0.0 \
-    --noise_std 1.0 \
+    --noise_stddev 1.0 \
     --batch_size 256 \
     --epochs 100 \
     --reg_coeff 1.0 \
@@ -10,4 +10,5 @@ python src/hydra/main.py  \
     --crit_parameter 0.5928 \
     --lattice_size 128 \
     --save_dir "./saved_models/hydra" \
-    --ckpt_freq 10 
+    --ckpt_freq 10  \
+    --samples 1000

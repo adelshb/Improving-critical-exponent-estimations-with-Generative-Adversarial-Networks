@@ -4,7 +4,6 @@
 
 * Python 3.8+
 * Tensorflow
-* sklearn
 * scipy
 * tqdm
 * jupyter
@@ -53,7 +52,7 @@ python src/cnn/train.py  \
 Make sure that configurations have been created first (at "/data/L_128/p_0.5928" in the following example) and the CNN is located at "./saved_models/cnn/saved-model.h5". 
 
 ```shell
-python src/hydra/main.py  \
+python src/hydra/train.py  \
     --noise_dim 100 \
     --noise_mean 0.0 \
     --noise_std 1.0 \
@@ -65,7 +64,8 @@ python src/hydra/main.py  \
     --crit_parameter 0.5928 \
     --lattice_size 128 \
     --save_dir "./saved_models/hydra" \
-    --ckpt_freq 10 
+    --ckpt_freq 10 \
+    --samples 1000
 ``` 
 
 ## License

@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-from typing import Optional, Dict
+from typing import Optional, Dict, Union
 
 import tensorflow as tf
 from tensorflow import Tensor
@@ -87,7 +87,7 @@ class Hydra():
         
         return loss_function(wanted_output, predicted_output)
 
-    def regularization(generated_images: Tensor):
+    def regularization(generated_images: Tensor) -> float:
 
         shape = generated_images.shape
         reg = tf.math.reduce_sum(tf.fill(shape, 1, dtype=float) - tf.abs(generated_images))
@@ -135,16 +135,13 @@ class Hydra():
 
         return {"cnn_loss": cnn_loss, "generator_dis_loss": discriminator_loss, "discriminator_loss": dis_loss}
 
-    # def train_discriminator_step(self,
-    #                         noise: Tensor,
-
     def val_cnn_stats(self,
             error_function = tf.keras.losses.MeanAbsoluteError(),
             noise_dim: int = 100,
             test_size: int = 1000,
             noise_mean: Optional[float] = 0,
             noise_stddev: Optional[float] = 1.0,
-            ):
+            ) -> Dict[str,Union[float,Tensor]] :
         r"""
         Compute statics on a CNN model evaluation on the generated data.
         Args:
@@ -174,3 +171,47 @@ class Hydra():
                 'min_pred':tf.math.reduce_min(y_pred), 
                 'val_stddev':stddev
             }
+
+    def load(self,
+            ckpt_path: str
+            ) -> None:
+        r"""
+        Load a latest checkpoint of hydra model.
+        Args:
+            checkpoint_path: Path to checkpoint folder
+        """
+
+        # from the DCGAN tutorial
+        checkpoint = tf.train.Checkpoint(
+            generator_optimizer= self.generator_optimizer,
+            discriminator_optimizer= self.discriminator_optimizer,
+            generator= self.generator,
+            discriminator= self.discriminator,
+        )
+
+        latest = tf.train.latest_checkpoint(ckpt_path)
+        checkpoint.restore(latest)
+
+    def generate(self,
+        sample_num: int,
+        noise_dim: Optional[int] = 100,
+        noise_mean: Optional[float] = 0.0,
+        noise_stddev: Optional[float] = 1.0,
+        signed: Optional[bool] = True
+        ) -> Tensor:
+        r"""
+        Generate configuration with generative model.
+        Args:
+            sample_num: Number of configuration to generate
+            noise_dim: Dimension of the noise for the generator.
+            noise_mean: Mean value of tne noise. Default at 0.
+            noise_stddev: Standard deviation of the noise. Default at 1.0.
+        """
+
+        noise = tf.random.normal([sample_num, noise_dim], mean=noise_mean, stddev=noise_stddev)
+        images = self.generator(noise, training=False)
+        
+        if signed:
+            images = tf.cast(tf.math.sign(images), tf.int8)
+
+        return images

@@ -2,7 +2,6 @@ tensorflow
 numpy
 matplotlib
 seaborn
-sklearn
 scipy
 tqdm
 jupyter

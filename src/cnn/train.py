@@ -12,13 +12,13 @@
 
 from argparse import ArgumentParser
 from datetime import datetime
-import os
 
+import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # for ignoring the some of tf warnings
 import tensorflow as tf
 
-from src.CNN_regression.network import cnn
-from src.CNN_regression.utils import *
+from network import cnn
+from utils import *
 
 def main(args):
 

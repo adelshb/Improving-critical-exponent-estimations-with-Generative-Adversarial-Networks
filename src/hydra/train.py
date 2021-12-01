@@ -13,11 +13,12 @@
 """Train the HYDRA model."""
 
 from argparse import ArgumentParser
-import os
 from datetime import datetime
+import numpy as np
 
-import tensorflow as tf
+import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+import tensorflow as tf
 
 from generator import Generator
 from discriminator import Discriminator
@@ -30,6 +31,7 @@ from logger import Logger
 def main(args):
 
     save_dir = os.path.join(args.save_dir, datetime.now().strftime("%Y.%m.%d.%H.%M.%S"))
+    os.makedirs(save_dir + "/samples", exist_ok=True)
 
     tbw_cnn = tf.summary.create_file_writer(save_dir + "/tensorboard/cnn_loss")
     tbw_gen_dis = tf.summary.create_file_writer(save_dir + "/tensorboard/gen_dis_dis")
@@ -69,11 +71,12 @@ def main(args):
 
     logger = Logger(save_dir=save_dir)
 
+    count = 1
     for epoch in range(args.epochs):
 
         logger.set_time_stamp(1)
 
-        noise = tf.random.normal([args.batch_size, args.noise_dim], mean=args.noise_mean, stddev=args.noise_std)
+        noise = tf.random.normal([args.batch_size, args.noise_dim], mean=args.noise_mean, stddev=args.noise_stddev)
 
         loss = hydra.train_step(noise = noise, real_images= real_images, l_cnn=1, l_dis=1)
 
@@ -81,7 +84,7 @@ def main(args):
                                     noise_dim=args.noise_dim,
                                     test_size=1000,
                                     noise_mean= args.noise_mean,
-                                    noise_stddev= args.noise_std
+                                    noise_stddev= args.noise_stddev
                                     )
             
         with tbw_cnn.as_default():
@@ -104,6 +107,16 @@ def main(args):
         if (epoch + 1) % args.ckpt_freq == 0:
             checkpoint.save(file_prefix= checkpoint_prefix)
 
+            samples = hydra.generate(sample_num = args.samples,
+                    noise_dim= args.noise_dim,
+                    noise_mean= args.noise_mean,
+                    noise_stddev= args.noise_stddev,
+                    signed = True).numpy()
+
+            file_sample = save_dir + "/samples/sample_epochs-{}".format(count)
+            np.save(file_sample, samples)
+            count += 1
+
         logger.set_time_stamp(2)
         logger.update_logs({**loss, **vals})
 
@@ -121,7 +134,7 @@ if __name__ == "__main__":
     # Model parameters 
     parser.add_argument("--noise_dim", type=int, default=100)
     parser.add_argument("--noise_mean", type=float, default=0.0)
-    parser.add_argument("--noise_std", type=float, default=1.0)
+    parser.add_argument("--noise_stddev", type=float, default=1.0)
 
     # Training parameters
     parser.add_argument("--batch_size", type=int, default=256)
@@ -137,6 +150,7 @@ if __name__ == "__main__":
     # Save parameters
     parser.add_argument("--save_dir", type=str, default="./saved_models/hydra")
     parser.add_argument("--ckpt_freq", type=int, default=10)
+    parser.add_argument("--samples", type=int, default=1000)
     
     args = parser.parse_args()
     main(args)
