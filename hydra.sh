@@ -10,5 +10,6 @@ python src/hydra/train.py  \
     --crit_parameter 0.5928 \
     --lattice_size 128 \
     --save_dir "./saved_models/hydra" \
-    --ckpt_freq 10  \
+    --ckpt_freq 10 \
+    --dis_smooth 0.3 \
     --samples 1000

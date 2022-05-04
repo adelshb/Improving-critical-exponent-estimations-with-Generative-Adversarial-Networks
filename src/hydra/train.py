@@ -55,6 +55,7 @@ def main(args):
                 discriminator = discriminator,
                 discriminator_optimizer = discriminator_optimizer,
                 discriminator_loss = tf.keras.losses.BinaryCrossentropy(from_logits=True),
+                dis_smooth = args.dis_smooth,
                 cnn = cnn,
                 cnn_loss = tf.keras.losses.MeanAbsoluteError(),
                 targeted_parameter = args.crit_parameter
@@ -141,6 +142,7 @@ if __name__ == "__main__":
     parser.add_argument("--epochs", type=int, default=100)
     parser.add_argument("--reg_coeff", type=float, default=1.0)
     parser.add_argument("--lr", type=float, default=1e-3)
+    parser.add_argument("--dis_smooth", type=float, default=0.2) # label smoothing on discriminator
 
     # Evaluation parameters
     parser.add_argument("--CNN_model_path", type=str, default="./saved_models/cnn/saved-model.h5")

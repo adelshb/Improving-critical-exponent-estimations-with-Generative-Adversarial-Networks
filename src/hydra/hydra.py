@@ -36,6 +36,7 @@ class Hydra():
                 discriminator: Sequential,
                 discriminator_optimizer: Optimizer, 
                 discriminator_loss: Loss,
+                dis_smooth: float,
                 cnn: Sequential,
                 cnn_loss: Loss,
                 targeted_parameter: float = 0.5928
@@ -59,6 +60,7 @@ class Hydra():
         self.discriminator = discriminator
         self.discriminator_optimizer = discriminator_optimizer
         self.discriminator_loss = discriminator_loss
+        self.dis_smooth = dis_smooth
 
         self.cnn = cnn
         self.cnn_loss = cnn_loss
@@ -69,7 +71,7 @@ class Hydra():
             model: Sequential,
             loss_function: Loss,
             generated_images: Tensor,
-            targeted_parameter: float
+            targeted_parameter: float,
             ) -> float:
     
         r"""
@@ -121,8 +123,8 @@ class Hydra():
             discriminator_loss = self.loss(self.discriminator, self.discriminator_loss, generated_images, targeted_parameter=1)
             gen_loss = l_cnn * cnn_loss + l_dis * discriminator_loss
 
-            fake_loss = self.loss(self.discriminator, self.discriminator_loss, generated_images, targeted_parameter=0)
-            real_loss = self.loss(self.discriminator, self.discriminator_loss, real_images, targeted_parameter=1)
+            fake_loss = self.loss(self.discriminator, self.discriminator_loss, generated_images, targeted_parameter=0+self.dis_smooth)
+            real_loss = self.loss(self.discriminator, self.discriminator_loss, real_images, targeted_parameter=1-self.dis_smooth)
             dis_loss = 0.5 * (fake_loss + real_loss)
 
         # Compute gradient and new weights
